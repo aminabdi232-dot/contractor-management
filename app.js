@@ -64,11 +64,19 @@ async function loginPage() {
   const form=$("#login-form"), status=$("#login-status");
   form.addEventListener("submit",async e=>{
     e.preventDefault();
-    const phone=$("#phone").value.trim(), password=$("#password").value;
+    const identifier=$("#login-identifier").value.trim(), password=$("#password").value;
     const btn=form.querySelector("button"); btn.disabled=true; message(status,"در حال بررسی اطلاعات ورود...");
     try {
-      const {data,error}=await supabase.auth.signInWithPassword({phone,password});
-      if(error) throw error;
+      // اگر شناسه شامل @ باشد، ورود با ایمیل انجام می‌شود؛ در غیر این صورت شماره همراه استفاده می‌شود.
+      const credentials=identifier.includes("@")
+        ? {email:identifier,password}
+        : {phone:identifier,password};
+      const {data,error}=await supabase.auth.signInWithPassword(credentials);
+      if(error) {
+        if(!identifier.includes("@") && /Phone logins are disabled/i.test(error.message))
+          throw new Error("ورود با شماره همراه در تنظیمات Supabase غیرفعال است. فعلاً با ایمیل وارد شوید یا ورود با شماره همراه را در Auth فعال کنید.");
+        throw error;
+      }
       await profileFor(data.user);
       location.replace("index.html");
     } catch(err) {
