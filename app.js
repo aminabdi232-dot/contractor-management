@@ -104,7 +104,7 @@ function decoratePanel(){
 function unifyTheme(){
  const style=document.createElement("style");style.textContent=`
  :root{color-scheme:dark;--bg:#0b1220;--panel:#151f31;--line:#293a52;--text:#f3f6fb;--muted:#a9b6c9;--accent:#5eead4}
- body{background:radial-gradient(ellipse at 50% -20%,#203653 0,transparent 55%),#0b1220!important;color:#f3f6fb!important;font-family:Tahoma,"Segoe UI",sans-serif!important}
+ @import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap");\n body{background:radial-gradient(ellipse at 50% -20%,#203653 0,transparent 55%),#0b1220!important;color:#f3f6fb!important;font-family:"Vazirmatn",sans-serif!important}\n body *{font-family:"Vazirmatn",sans-serif!important}
  main{max-width:1120px}
  .card,.panel,.tile,.note,.workspace,.step-card{border-color:#293a52!important;border-radius:16px!important}
  .card,.panel,.workspace,.step-card{background:linear-gradient(145deg,#19283d,#121d2e)!important;color:#f3f6fb!important}
@@ -130,49 +130,58 @@ async function setupSubmodule(){
 function setupModuleCatalog(module) {
   const main=$("main"); if(!main || $("#module-catalog")) return;
   const section=document.createElement("section");section.id="module-catalog";
-  section.style.cssText="margin:24px 0;padding:20px;border:1px solid #806c48;border-radius:16px;background:linear-gradient(145deg,#19283d,#101a2a);color:#f3f6fb";
+  section.style.cssText="margin:24px 0;padding:22px;border:1px solid #806c48;border-radius:18px;background:linear-gradient(145deg,#19283d,#101a2a);color:#f3f6fb";
   const head=document.createElement("div");head.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap";
-  const title=document.createElement("h2");title.textContent="ساختار دلخواه این بخش";title.style.cssText="font-size:18px;margin:0;color:#f3f6fb";
-  const addProject=document.createElement("button");addProject.type="button";addProject.textContent="+ تعریف پروژه جدید";addProject.style.cssText="background:#a88443;color:#101827;border:0;border-radius:9px;padding:10px 14px;font:13px Tahoma;cursor:pointer";
+  const title=document.createElement("h2");title.textContent="ساختار دلخواه این بخش";title.style.cssText="font-size:19px;margin:0;color:#f3f6fb";
+  const addProject=document.createElement("button");addProject.type="button";addProject.textContent="+ تعریف پروژه جدید";addProject.style.cssText="background:linear-gradient(135deg,#d6b879,#a88443);color:#101827;border:0;border-radius:10px;padding:11px 16px;font:600 13px Vazirmatn,sans-serif;cursor:pointer";
   head.append(title,addProject);
-  const hint=document.createElement("p");hint.textContent="برای هر بخش می‌توانی پروژه‌های مستقل بسازی و داخل هر پروژه، هر تعداد زیرمجموعه و زیرشاخه با عنوان دلخواه اضافه کنی.";hint.style.cssText="font:12px/2 Tahoma;color:#a9b6c9;margin:10px 0 16px";
-  const status=document.createElement("p");status.style.cssText="font:12px Tahoma;min-height:18px";
+  const hint=document.createElement("p");hint.textContent="پروژه‌ها و زیرمجموعه‌های دلخواهت را بدون محدودیت تعریف و مدیریت کن.";hint.style.cssText="font:13px/2 Vazirmatn,sans-serif;color:#a9b6c9;margin:10px 0 16px";
+  const status=document.createElement("p");status.style.cssText="font:12px Vazirmatn,sans-serif;min-height:20px";
   const tree=document.createElement("div");tree.style.cssText="display:grid;gap:10px";
-  section.append(head,hint,status,tree);
-  main.insertBefore(section,main.children[1]||null);
+  section.append(head,hint,status,tree);main.insertBefore(section,main.children[1]||null);
   const say=(t,bad=false)=>{status.textContent=t;status.style.color=bad?"#fca5a5":"#5eead4";};
-  const btnStyle="background:#26364b;color:#e8d7b5;border:1px solid #806c48;border-radius:8px;padding:7px 10px;font:11px Tahoma;cursor:pointer";
-  async function addNode(parent=null){
-    const name=prompt(parent?"نام زیرمجموعه جدید را وارد کن:":"نام پروژه جدید را وارد کن:");
-    if(name===null)return;
-    if(!name.trim()){say("عنوان نمی‌تواند خالی باشد.",true);return;}
-    addProject.disabled=true;say("در حال ذخیره...");
-    const {error}=await supabase.from("module_catalog").insert({module,parent_id:parent?.id||null,node_type:parent?"category":"project",name:name.trim()});
-    addProject.disabled=false;
-    if(error){say("ذخیره انجام نشد: "+error.message,true);return;}
-    say("مورد جدید ثبت شد.");await load();
+  const btnStyle="background:#26364b;color:#e8d7b5;border:1px solid #806c48;border-radius:9px;padding:8px 12px;font:12px Vazirmatn,sans-serif;cursor:pointer";
+  let modal=null;
+  function closeModal(){modal?.remove();modal=null;}
+  function openNameDialog(parent=null){
+    closeModal();
+    modal=document.createElement("div");modal.style.cssText="position:fixed;inset:0;z-index:9999;background:#020817c9;display:grid;place-items:center;padding:18px";
+    const card=document.createElement("form");card.style.cssText="width:min(440px,100%);padding:24px;border:1px solid #806c48;border-radius:18px;background:linear-gradient(145deg,#19283d,#101a2a);box-shadow:0 25px 80px #0009;color:#f3f6fb";
+    const heading=document.createElement("h3");heading.textContent=parent?"افزودن زیرمجموعه":"تعریف پروژه جدید";heading.style.cssText="margin:0 0 16px;font:600 18px Vazirmatn,sans-serif";
+    const label=document.createElement("label");label.textContent=parent?"عنوان زیرمجموعه":"نام پروژه";label.style.cssText="display:block;margin-bottom:8px;font:13px Vazirmatn,sans-serif;color:#cbd5e1";
+    const input=document.createElement("input");input.type="text";input.placeholder=parent?"مثلاً قراردادهای اصلی":"نام پروژه را وارد کنید";input.required=true;input.maxLength=120;input.style.cssText="width:100%;box-sizing:border-box;padding:12px;border:1px solid #40536d;border-radius:10px;background:#0b1422;color:#fff;font:14px Vazirmatn,sans-serif;outline:none";
+    const actions=document.createElement("div");actions.style.cssText="display:flex;justify-content:flex-start;gap:9px;margin-top:18px";
+    const submit=document.createElement("button");submit.type="submit";submit.textContent="ثبت";submit.style.cssText=""+btnStyle+";background:#b99b62;color:#101827;padding:10px 22px;font-weight:600";
+    const cancel=document.createElement("button");cancel.type="button";cancel.textContent="انصراف";cancel.style.cssText=btnStyle;cancel.onclick=closeModal;
+    actions.append(submit,cancel);label.append(input);card.append(heading,label,actions);modal.append(card);document.body.append(modal);
+    modal.addEventListener("click",e=>{if(e.target===modal)closeModal();});
+    card.addEventListener("submit",async e=>{
+      e.preventDefault();const name=input.value.trim();if(!name){input.focus();return;}
+      submit.disabled=true;submit.textContent="در حال ثبت...";
+      const {error}=await supabase.from("module_catalog").insert({module,parent_id:parent?.id||null,node_type:parent?"category":"project",name});
+      if(error){say("ذخیره انجام نشد: "+error.message,true);submit.disabled=false;submit.textContent="ثبت";return;}
+      closeModal();say("مورد جدید با موفقیت ثبت شد.");await load();
+    });
+    input.focus();
   }
   function renderNode(node,depth=0){
-    const wrap=document.createElement("div");wrap.style.cssText="margin-right:"+(depth*18)+"px;padding:12px;border:1px solid #35445a;border-radius:11px;background:#0b1422";
+    const wrap=document.createElement("div");wrap.style.cssText="margin-right:"+(depth*18)+"px;padding:13px;border:1px solid #35445a;border-radius:12px;background:#0b1422";
     const line=document.createElement("div");line.style.cssText="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap";
-    const name=document.createElement("strong");name.textContent=(node.node_type==="project"?"▣ ":"↳ ")+node.name;name.style.cssText="font:13px Tahoma;color:#f3f6fb";
-    const add=document.createElement("button");add.type="button";add.textContent="+ افزودن زیرمجموعه";add.style.cssText=btnStyle;add.onclick=()=>addNode(node);
-    line.append(name,add);wrap.append(line);
-    (node.children||[]).forEach(child=>wrap.append(renderNode(child,depth+1)));
-    return wrap;
+    const name=document.createElement("strong");name.textContent=(node.node_type==="project"?"▣ ":"↳ ")+node.name;name.style.cssText="font:600 14px Vazirmatn,sans-serif;color:#f3f6fb";
+    const add=document.createElement("button");add.type="button";add.textContent="+ افزودن زیرمجموعه";add.style.cssText=btnStyle;add.onclick=()=>openNameDialog(node);
+    line.append(name,add);wrap.append(line);(node.children||[]).forEach(child=>wrap.append(renderNode(child,depth+1)));return wrap;
   }
   async function load(){
     tree.replaceChildren();say("در حال دریافت ساختار...");
     const {data,error}=await supabase.from("module_catalog").select("id,module,parent_id,node_type,name,sort_order,created_at").eq("module",module).order("sort_order").order("created_at");
     if(error){say("دریافت اطلاعات انجام نشد: "+error.message,true);return;}
-    const nodes=new Map(data.map(x=>[x.id,{...x,children:[]} ]));const roots=[];
+    const nodes=new Map(data.map(x=>[x.id,{...x,children:[]}]));const roots=[];
     nodes.forEach(n=>{if(n.parent_id&&nodes.has(n.parent_id))nodes.get(n.parent_id).children.push(n);else roots.push(n);});
     roots.forEach(n=>tree.append(renderNode(n)));
-    if(!roots.length){const empty=document.createElement("p");empty.textContent="هنوز پروژه‌ای در این بخش تعریف نشده است. از دکمه بالا شروع کن.";empty.style.cssText="color:#9aabc1;font:12px Tahoma";tree.append(empty);}
+    if(!roots.length){const empty=document.createElement("p");empty.textContent="هنوز پروژه‌ای در این بخش تعریف نشده است. از دکمه بالا شروع کن.";empty.style.cssText="color:#9aabc1;font:13px Vazirmatn,sans-serif";tree.append(empty);}
     say(roots.length+" پروژه در این بخش تعریف شده است.");
   }
-  addProject.onclick=()=>addNode(null);
-  load();
+  addProject.onclick=()=>openNameDialog();load();
 }
 
 function setupDataForm(module) {
