@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>پنل اولیه | سامانه امین عبدی</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#151f31;--line:#26354b;--muted:#a8b5c8;--text:#f4f7fb;--accent:#5eead4}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Tahoma,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 50% -20%,#203653 0,transparent 55%),var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;padding:32px 18px}
+main{width:min(100%,1040px)}
+header{text-align:center;margin-bottom:38px}
+.kicker{font-size:13px;color:var(--accent);letter-spacing:.3px;margin-bottom:15px}
+h1{font-size:clamp(26px,4vw,40px);margin:0 0 13px;font-weight:800}
+.subtitle{color:var(--muted);font-size:15px;line-height:2;margin:0}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.tile{position:relative;min-height:210px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,rgba(28,42,63,.96),rgba(17,27,43,.96));padding:25px;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:transform .2s,border-color .2s,background .2s;overflow:hidden}
+.tile.active{border-color:#367f7c;cursor:pointer}
+.tile.active:hover{transform:translateY(-5px);border-color:var(--accent);background:linear-gradient(145deg,#1d3b46,#17283a)}
+.tile.disabled{opacity:.72;cursor:default}
+.symbol{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:#1e454b;color:var(--accent);font-size:24px;margin-bottom:23px}
+.disabled .symbol{background:#293447;color:#9aa9bc}
+.tile h2{font-size:19px;margin:0 0 9px}
+.tile p{font-size:13px;color:var(--muted);line-height:1.9;margin:0}
+.bottom{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:22px;font-size:12px;color:var(--accent)}
+.disabled .bottom{color:#a5b1c2}
+.arrow{font-size:19px}
+footer{text-align:center;color:#718198;font-size:11px;margin-top:34px}
+@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:500px){body{padding:26px 14px}.grid{grid-template-columns:1fr}.tile{min-height:175px}.symbol{margin-bottom:16px}header{margin-bottom:28px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="kicker">سامانه امین عبدی</div>
+<h1>پنل اولیه سامانه</h1>
+<p class="subtitle">برای ورود به بخش موردنظر، یکی از گزینه‌های زیر را انتخاب کنید.</p>
+</header>
+<section class="grid" aria-label="بخش‌های سامانه">
+<a class="tile active" href="transactions.html"><div class="symbol" aria-hidden="true">▤</div><h2>کمیسیون معاملات</h2><p>فرآیند معاملات، استعلام بها، مناقصه، کمیسیون و گردش تأییدها.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
+<a class="tile active" href="projects.html"><div class="symbol" aria-hidden="true">▦</div><h2>مدیریت پروژه‌ها</h2><p>پرونده پروژه‌ها، اطلاعات پیمان، برنامه زمان‌بندی و کنترل پیشرفت.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
+<a class="tile active" href="finance.html"><div class="symbol" aria-hidden="true">▣</div><h2>امور مالی و پرداخت‌ها</h2><p>صورت‌حساب‌ها، دریافت و پرداخت، هزینه‌ها، تنخواه و مطالبات.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
+<a class="tile active" href="payroll.html"><div class="symbol" aria-hidden="true">♙</div><h2>حقوق و دستمزد</h2><p>اطلاعات پرسنل، کارکرد، اضافه‌کاری، کسورات و فیش حقوقی.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
+<a class="tile active" href="documents.html"><div class="symbol" aria-hidden="true">▧</div><h2>مدیریت اسناد</h2><p>قراردادها، مکاتبات، صورت‌جلسات، نقشه‌ها و مدارک پروژه.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
+<a class="tile active" href="technical.html"><div class="symbol" aria-hidden="true">⚙</div><h2>بخش فنی و مهندسی</h2><p>صورت‌وضعیت، تعدیل، متره، برآورد، آنالیز بها و امور فنی پیمان.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
+<a class="tile active" href="services.html"><div class="symbol" aria-hidden="true">✦</div><h2>سایر خدمات</h2><p>فرم‌ها و ابزارهای عمومی و پشتیبانی موردنیاز شرکت.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
+</section>
+<footer>سامانه داخلی شرکت · نسخه آزمایشی</footer>
+</main>
+<script type="module" src="app.js"></script></body>
+</html>
