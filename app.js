@@ -68,8 +68,8 @@ async function loginPage() {
     const btn=form.querySelector("button"); btn.disabled=true; message(status,"در حال بررسی اطلاعات ورود...");
     try {
       // اگر شناسه شامل @ باشد، ورود با ایمیل انجام می‌شود؛ در غیر این صورت شماره همراه استفاده می‌شود.
-      const phone=identifier.replace(/[\\s()-]/g,"");
-      const normalizedPhone=/^09\\d{9}$/.test(phone)?"+98"+phone.slice(1):/^9\\d{9}$/.test(phone)?"+98"+phone:phone;
+      const phone=identifier.replace(/[\s()-]/g,"");
+      const normalizedPhone=/^09\d{9}$/.test(phone)?"+98"+phone.slice(1):/^9\d{9}$/.test(phone)?"+98"+phone:phone;
       const credentials=identifier.includes("@")
         ? {email:identifier,password}
         : {phone:normalizedPhone,password};
