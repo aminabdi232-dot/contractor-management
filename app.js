@@ -102,7 +102,7 @@ function setupUserManagement(){
   const main=$("main"); if(!main || $("#user-management")) return;
   const section=document.createElement("section");
   section.id="user-management";
-  section.style.cssText="margin:0 0 30px;padding:24px;border:1px solid #b98535;border-radius:18px;background:linear-gradient(145deg,#142b48,#091a31);box-shadow:0 12px 30px #0005;color:#f7f8fb";
+  section.style.cssText="display:none;margin:0 0 30px;padding:24px;border:1px solid #b98535;border-radius:18px;background:linear-gradient(145deg,#142b48,#091a31);box-shadow:0 12px 30px #0005;color:#f7f8fb";
   section.innerHTML=`
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px">
       <span style="font-size:25px;color:#e8b957">♙</span>
@@ -152,9 +152,16 @@ function addUserBar(profile) {
   const bar=document.createElement("div");bar.id="user-bar";
   bar.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 18px;padding:10px 14px;border:1px solid #293a52;border-radius:12px;background:#111c2c;color:#a9b6c9;font:12px Tahoma,sans-serif";
   const who=document.createElement("span");who.textContent="کاربر: "+(profile.full_name||"مدیر سامانه");
+  const actions=document.createElement("div");actions.style.cssText="display:flex;align-items:center;gap:8px";
+  if(profile.is_admin){
+    const users=document.createElement("button");users.type="button";users.textContent="♙ مدیریت کاربران";users.title="ایجاد و مدیریت حساب‌های کاربری";
+    users.style.cssText="background:#6b5125;color:#ffe2a0;border:1px solid #b98535;border-radius:8px;padding:8px 12px;cursor:pointer";
+    users.onclick=()=>{const section=$("#user-management");if(!section)return;const opening=section.style.display==="none";section.style.display=opening?"block":"none";if(opening)section.scrollIntoView({behavior:"smooth",block:"start"});};
+    actions.append(users);
+  }
   const out=document.createElement("button");out.textContent="خروج";out.style.cssText="background:#26364b;color:#fff;border:1px solid #40536d;border-radius:8px;padding:8px 14px;cursor:pointer";
   out.onclick=async()=>{await supabase.auth.signOut();location.replace("login.html");};
-  bar.append(who,out);main.prepend(bar);
+  actions.append(out);bar.append(who,actions);main.prepend(bar);
 }
 function addSubmenuLinks(module){
  document.querySelectorAll(".card").forEach(card=>{const h=card.querySelector("h2");if(!h||card.querySelector(".submenu-link"))return;const link=document.createElement("a");link.className="submenu-link";link.href="submodule.html?module="+encodeURIComponent(module)+"&title="+encodeURIComponent(h.textContent.trim());link.textContent="ورود به زیرمجموعه ←";link.style.cssText="display:inline-block;margin-top:12px;color:#5eead4;text-decoration:none;font-size:12px";card.append(link);});
