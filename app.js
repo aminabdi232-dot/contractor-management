@@ -239,7 +239,8 @@ function setupDataForm(module) {
   if(path==="login.html"){await loginPage();return;} 
   if(path==="recovery.html"){await recoveryPage();return;} 
   if(path==="reset-password.html"){await resetPasswordPage();return;}
-  // ورود موقتاً غیرفعال شده است؛ کنترل دسترسی پایگاه داده همچنان فعال می‌ماند.
+  // تمام صفحات داخلی فقط پس از ورود معتبر در دسترس هستند.
+  if(!(await protectPage())) return;
   if(path==="submodule.html"){await setupSubmodule();return;}
   unifyTheme();
   if(path==="panel.html") decoratePanel();
