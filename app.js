@@ -14,9 +14,9 @@ function message(el, text, bad=false) {
   el.style.color = bad ? "#fca5a5" : "#5eead4";
 }
 async function profileFor(user) {
-  const {data,error}=await supabase.from("app_profiles").select("full_name,is_admin,is_active").eq("id",user.id).single();
+  const {data,error}=await supabase.from("app_profiles").select("full_name,is_admin,is_active,job_title").eq("id",user.id).single();
   if(error) throw error;
-  if(!data.is_active || !data.is_admin) throw new Error("حساب شما فعال یا دارای دسترسی مدیریتی نیست.");
+  if(!data.is_active) throw new Error("حساب شما غیرفعال است. با مدیر سامانه تماس بگیرید.");
   return data;
 }
 
@@ -68,9 +68,11 @@ async function loginPage() {
     const btn=form.querySelector("button"); btn.disabled=true; message(status,"در حال بررسی اطلاعات ورود...");
     try {
       // اگر شناسه شامل @ باشد، ورود با ایمیل انجام می‌شود؛ در غیر این صورت شماره همراه استفاده می‌شود.
+      const phone=identifier.replace(/[\\s()-]/g,"");
+      const normalizedPhone=/^09\\d{9}$/.test(phone)?"+98"+phone.slice(1):/^9\\d{9}$/.test(phone)?"+98"+phone:phone;
       const credentials=identifier.includes("@")
         ? {email:identifier,password}
-        : {phone:identifier,password};
+        : {phone:normalizedPhone,password};
       const {data,error}=await supabase.auth.signInWithPassword(credentials);
       if(error) {
         if(!identifier.includes("@") && /Phone logins are disabled/i.test(error.message))
@@ -89,8 +91,61 @@ async function loginPage() {
 async function protectPage() {
   const {data:{session}}=await supabase.auth.getSession();
   if(!session){location.replace("login.html");return false;}
-  try { const profile=await profileFor(session.user); addUserBar(profile); return true; }
-  catch(e){await supabase.auth.signOut();location.replace("login.html?reason=access");return false;}
+  try {
+    const profile=await profileFor(session.user);
+    addUserBar(profile);
+    if(path==="panel.html" && profile.is_admin) setupUserManagement();
+    return true;
+  } catch(e){await supabase.auth.signOut();location.replace("login.html?reason=access");return false;}
+}
+function setupUserManagement(){
+  const main=$("main"); if(!main || $("#user-management")) return;
+  const section=document.createElement("section");
+  section.id="user-management";
+  section.style.cssText="margin:0 0 30px;padding:24px;border:1px solid #b98535;border-radius:18px;background:linear-gradient(145deg,#142b48,#091a31);box-shadow:0 12px 30px #0005;color:#f7f8fb";
+  section.innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+      <span style="font-size:25px;color:#e8b957">♙</span>
+      <h2 style="margin:0;color:#ffe2a0;font-size:21px">مدیریت کاربران</h2>
+    </div>
+    <p style="margin:0 0 18px;color:#aebdd0;font-size:13px;line-height:2">ایجاد حساب کاربری جدید و تعیین اطلاعات ورود</p>
+    <form id="new-user-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px">
+      <label style="display:grid;gap:7px;font-size:13px;color:#dbe5f2">نام و نام خانوادگی<input id="new-user-name" required maxlength="100" placeholder="نام کاربر" style="width:100%;padding:12px;border:1px solid #52657e;border-radius:10px;background:#07172b;color:white"></label>
+      <label style="display:grid;gap:7px;font-size:13px;color:#dbe5f2">شماره موبایل / نام کاربری<input id="new-user-phone" required inputmode="tel" placeholder="09123456789" style="width:100%;padding:12px;border:1px solid #52657e;border-radius:10px;background:#07172b;color:white"></label>
+      <label style="display:grid;gap:7px;font-size:13px;color:#dbe5f2">عنوان شغلی<input id="new-user-job" maxlength="100" placeholder="مثلاً کارشناس فنی" style="width:100%;padding:12px;border:1px solid #52657e;border-radius:10px;background:#07172b;color:white"></label>
+      <label style="display:grid;gap:7px;font-size:13px;color:#dbe5f2">رمز عبور<input id="new-user-password" type="text" required minlength="8" autocomplete="new-password" placeholder="حداقل ۸ نویسه" style="width:100%;padding:12px;border:1px solid #52657e;border-radius:10px;background:#07172b;color:white"></label>
+      <div style="display:flex;align-items:end"><button id="new-user-submit" type="submit" style="width:100%;padding:13px 18px;border:0;border-radius:10px;background:linear-gradient(135deg,#ffe2a0,#c18d37);color:#142238;font-weight:800;cursor:pointer">+ ایجاد کاربر</button></div>
+    </form>
+    <p id="new-user-status" role="status" style="min-height:24px;margin:14px 0 0;font-size:13px"></p>
+    <p style="margin:4px 0 0;color:#8fa4bf;font-size:11px;line-height:1.9">نام کاربری برای ورود همان شماره موبایل است. حساب‌های جدید با دسترسی کاربر عادی ساخته می‌شوند.</p>
+  `;
+  const heading=main.querySelector(".heading");
+  if(heading?.nextSibling) main.insertBefore(section,heading.nextSibling); else main.prepend(section);
+  const form=$("#new-user-form",section),status=$("#new-user-status",section),button=$("#new-user-submit",section);
+  form.addEventListener("submit",async e=>{
+    e.preventDefault();
+    const full_name=$("#new-user-name",section).value.trim();
+    const phone=$("#new-user-phone",section).value.trim();
+    const job_title=$("#new-user-job",section).value.trim();
+    const password=$("#new-user-password",section).value;
+    if(password.length<8){status.textContent="رمز عبور باید حداقل ۸ نویسه باشد.";status.style.color="#fca5a5";return;}
+    button.disabled=true;button.textContent="در حال ایجاد حساب...";
+    status.textContent="در حال ثبت اطلاعات کاربر...";status.style.color="#ffe2a0";
+    try{
+      const {data,error}=await supabase.functions.invoke("admin-create-user",{body:{full_name,phone,password,job_title}});
+      if(error){
+        let detail=error.message||"ایجاد کاربر انجام نشد.";
+        try{const payload=await error.context?.json();if(payload?.error)detail=payload.error;}catch{}
+        throw new Error(detail);
+      }
+      if(!data?.success) throw new Error(data?.error||"پاسخ سرور معتبر نیست.");
+      const normalized=data.user?.phone||phone;
+      status.textContent="کاربر با موفقیت ساخته شد. نام کاربری ورود: "+normalized;
+      status.style.color="#5eead4";
+      form.reset();
+    }catch(err){status.textContent=err.message||"ایجاد کاربر انجام نشد.";status.style.color="#fca5a5";}
+    finally{button.disabled=false;button.textContent="+ ایجاد کاربر";}
+  });
 }
 function addUserBar(profile) {
   const main=$("main"); if(!main || $("#user-bar")) return;
