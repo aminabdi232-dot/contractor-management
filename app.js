@@ -52,6 +52,9 @@ function addUserBar(profile) {
   out.onclick=async()=>{await supabase.auth.signOut();location.replace("login.html");};
   bar.append(who,out);main.prepend(bar);
 }
+function addSubmenuLinks(module){
+ document.querySelectorAll(".card").forEach(card=>{const h=card.querySelector("h2");if(!h||card.querySelector(".submenu-link"))return;const link=document.createElement("a");link.className="submenu-link";link.href="submodule.html?module="+encodeURIComponent(module)+"&title="+encodeURIComponent(h.textContent.trim());link.textContent="ورود به زیرمجموعه ←";link.style.cssText="display:inline-block;margin-top:12px;color:#5eead4;text-decoration:none;font-size:12px";card.append(link);});
+}
 function decoratePanel(){
  document.querySelectorAll(".tile").forEach((tile,i)=>{const symbols=["▤","▦","◈","♙","▧","⌘","✦"];const s=tile.querySelector(".symbol");if(s)s.textContent=symbols[i]||"✧";});
  const modules=["transactions","projects","finance","payroll","documents","technical","services"];
@@ -136,5 +139,6 @@ function setupDataForm(module) {
   if(path==="submodule.html"){await setupSubmodule();return;}
   unifyTheme();
   if(path==="panel.html") decoratePanel();
-  if(moduleMap[path])setupDataForm(moduleMap[path]);
+  if(moduleMap[path]){addSubmenuLinks(moduleMap[path]);setupDataForm(moduleMap[path]);}
+  if(path==="transactions.html") addSubmenuLinks("transactions");
 })();
