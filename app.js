@@ -4,7 +4,7 @@ const SUPABASE_URL = "https://oqolkqwnsivoqnegagdv.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-F4sy_LmvOXS8LFywNnNMQ_akJ91gic";
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const path = location.pathname.split("/").pop() || "index.html";
-const moduleMap = {"projects.html":"projects","finance.html":"finance","payroll.html":"payroll","technical.html":"technical","documents.html":"documents","services.html":"services","transactions.html":"transactions"};
+const moduleMap = {"projects.html":"projects","finance.html":"finance","payroll.html":"payroll","technical.html":"technical","documents.html":"documents","services.html":"services"};
 const $ = (s, root=document) => root.querySelector(s);
 
 function message(el, text, bad=false) {
