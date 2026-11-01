@@ -26,7 +26,7 @@ async function recoveryPage(){
   e.preventDefault();const email=$("#recovery-email").value.trim();
   const btn=form.querySelector("button");btn.disabled=true;message(status,"در حال ارسال لینک بازیابی...");
   try{
-   const redirectTo=new URL("reset-password.html",location.href).href;
+   const redirectTo="https://aminabdi232-dot.github.io/contractor-management/reset-password.html";
    const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo});
    if(error)throw error;
    message(status,"لینک بازیابی ارسال شد. صندوق ورودی و پوشه هرزنامه را بررسی کنید.");
@@ -41,6 +41,7 @@ async function resetPasswordPage(){
  supabase.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"&&session)enable();});
  const {data:{session}}=await supabase.auth.getSession();
  if(session)enable();
+ if(!session && !location.hash.includes("access_token") && !location.search.includes("code=")) message(status,"نشست بازیابی دریافت نشد. لینک ایمیل ممکن است منقضی شده باشد یا آدرس بازگشت آن درست تنظیم نشده باشد. از صفحه بازیابی، لینک تازه‌ای درخواست کنید.",true);
  form.addEventListener("submit",async e=>{
   e.preventDefault();
   const password=$("#new-password").value,confirm=$("#confirm-password").value;
