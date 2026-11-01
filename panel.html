@@ -3,51 +3,87 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#101827">
-<title>پنل اولیه | سامانه امین عبدی</title>
+<meta name="theme-color" content="#071a35">
+<title>پنل مدیریت | سامانه امین عبدی</title>
 <style>
-:root{color-scheme:dark;--bg:#0b1220;--panel:#151f31;--line:#26354b;--muted:#a8b5c8;--text:#f4f7fb;--accent:#5eead4}
+:root{color-scheme:dark;--navy:#06162e;--navy2:#0b2344;--gold:#e8b957;--gold2:#ffe2a0;--silver:#cbd5e1;--muted:#aebdd0;--line:#b98535;--text:#f7f8fb}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;font-family:Tahoma,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 50% -20%,#203653 0,transparent 55%),var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;padding:32px 18px}
-main{width:min(100%,1040px)}
-header{text-align:center;margin-bottom:38px}
-.kicker{font-size:13px;color:var(--accent);letter-spacing:.3px;margin-bottom:15px}
-h1{font-size:clamp(26px,4vw,40px);margin:0 0 13px;font-weight:800}
-.subtitle{color:var(--muted);font-size:15px;line-height:2;margin:0}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
-.tile{position:relative;min-height:210px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,rgba(28,42,63,.96),rgba(17,27,43,.96));padding:25px;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:transform .2s,border-color .2s,background .2s;overflow:hidden}
-.tile.active{border-color:#367f7c;cursor:pointer}
-.tile.active:hover{transform:translateY(-5px);border-color:var(--accent);background:linear-gradient(145deg,#1d3b46,#17283a)}
-.tile.disabled{opacity:.72;cursor:default}
-.symbol{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:#1e454b;color:var(--accent);font-size:24px;margin-bottom:23px}
-.disabled .symbol{background:#293447;color:#9aa9bc}
-.tile h2{font-size:19px;margin:0 0 9px}
-.tile p{font-size:13px;color:var(--muted);line-height:1.9;margin:0}
-.bottom{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:22px;font-size:12px;color:var(--accent)}
-.disabled .bottom{color:#a5b1c2}
+body{margin:0;min-height:100vh;font-family:Tahoma,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(ellipse at 50% -15%,#23446b 0,transparent 45%),radial-gradient(ellipse at 10% 80%,#122c4b 0,transparent 38%),linear-gradient(135deg,#061329,#0a1d38 55%,#061329);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background:repeating-linear-gradient(135deg,transparent 0 95px,rgba(224,177,88,.16) 96px,transparent 98px 190px)}
+.topbar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:22px;padding:18px clamp(18px,4vw,58px);border-bottom:1px solid rgba(232,185,87,.75);background:linear-gradient(90deg,rgba(3,14,31,.97),rgba(14,39,70,.96),rgba(3,14,31,.97));box-shadow:0 8px 28px #020b18a8}
+.brand{display:flex;align-items:center;gap:14px;color:var(--gold2);font-weight:800;font-size:17px;line-height:1.8}
+.brand-mark{width:58px;height:58px;border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-size:29px;box-shadow:0 0 20px #e8b95735}
+.top-title{font-size:clamp(17px,2.4vw,27px);font-weight:800;color:var(--gold2);text-align:center}
+.profile{display:flex;align-items:center;gap:10px;color:#f2f5fa;font-size:13px;white-space:nowrap}
+.profile-icon{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--gold);color:var(--gold);font-size:22px}
+main{width:min(1320px,100%);margin:auto;padding:42px 24px 110px;position:relative;z-index:1}
+.heading{text-align:center;margin:0 auto 38px}
+h1{font-size:clamp(26px,4vw,40px);margin:0 0 15px;font-weight:900;text-shadow:0 3px 12px #0008}
+.heading-rule{height:2px;width:min(440px,80%);margin:auto;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.subtitle{color:var(--muted);font-size:14px;line-height:2;margin:16px 0 0}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+.tile{position:relative;isolation:isolate;min-height:265px;border:1px solid var(--gold);border-radius:22px;padding:22px 20px 19px;text-decoration:none;color:inherit;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden;background:linear-gradient(145deg,rgba(23,53,88,.98),rgba(5,21,43,.99) 72%);box-shadow:0 12px 28px #0005,inset 0 1px 0 #fff2;transition:transform .22s,border-color .22s,box-shadow .22s}
+.tile:before{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(ellipse at 50% 0,rgba(255,211,124,.15),transparent 55%)}
+.tile:after{content:"";position:absolute;top:0;left:18%;right:18%;height:2px;background:linear-gradient(90deg,transparent,var(--gold2),transparent);box-shadow:0 0 12px var(--gold)}
+.tile:hover{transform:translateY(-7px);border-color:#ffe1a0;box-shadow:0 18px 38px #0008,0 0 22px #dba94c35}
+.art{height:145px;width:100%;display:grid;place-items:center;margin-bottom:8px}
+.art svg{width:min(100%,190px);height:142px;overflow:visible;filter:drop-shadow(0 9px 8px #0008)}
+.tile h2{font-size:18px;line-height:1.8;margin:3px 0 4px;color:#fff;font-weight:800}
+.tile p{font-size:12px;line-height:1.9;color:#b9c7d9;margin:0;max-width:270px}
+.bottom{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:auto;padding-top:13px;font-size:11px;color:var(--gold2)}
 .arrow{font-size:19px}
-footer{text-align:center;color:#718198;font-size:11px;margin-top:34px}
-@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:500px){body{padding:26px 14px}.grid{grid-template-columns:1fr}.tile{min-height:175px}.symbol{margin-bottom:16px}header{margin-bottom:28px}}
+.footer-scene{position:absolute;z-index:-1;bottom:0;left:0;right:0;height:95px;opacity:.5;pointer-events:none;background:linear-gradient(0deg,#020c1b,transparent)}
+.footer-scene:before{content:"";position:absolute;bottom:0;left:4%;right:4%;height:72px;background:linear-gradient(90deg,transparent 0 3%,#7189a8 3% 3.4%,transparent 3.4% 8%,#7189a8 8% 8.5%,transparent 8.5% 15%,#7189a8 15% 15.5%,transparent 15.5% 22%,#7189a8 22% 22.5%,transparent 22.5% 30%,#7189a8 30% 30.5%,transparent 30.5% 38%,#7189a8 38% 38.5%,transparent 38.5% 48%,#7189a8 48% 48.5%,transparent 48.5% 58%,#7189a8 58% 58.5%,transparent 58.5% 68%,#7189a8 68% 68.5%,transparent 68.5% 78%,#7189a8 78% 78.5%,transparent 78.5% 88%,#7189a8 88% 88.5%,transparent 88.5%);clip-path:polygon(0 100%,0 70%,5% 70%,5% 35%,10% 35%,10% 65%,15% 65%,15% 20%,20% 20%,20% 55%,25% 55%,25% 10%,30% 10%,30% 70%,36% 70%,36% 30%,42% 30%,42% 75%,48% 75%,48% 18%,55% 18%,55% 65%,61% 65%,61% 40%,68% 40%,68% 75%,75% 75%,75% 25%,82% 25%,82% 68%,90% 68%,90% 38%,96% 38%,96% 70%,100% 70%,100% 100%)}
+footer{text-align:center;color:#879bb5;font-size:11px;margin-top:34px}
+@media(max-width:980px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.top-title{max-width:40%}}
+@media(max-width:700px){.topbar{flex-wrap:wrap;padding:14px 18px}.top-title{order:3;max-width:none;width:100%;text-align:center}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}main{padding:30px 14px 100px}.tile{min-height:245px;padding:17px 12px}.art{height:125px}.art svg{height:122px}}
+@media(max-width:430px){.grid{grid-template-columns:1fr}.tile{min-height:225px}.art{height:118px}.art svg{height:115px}.brand{font-size:14px}.profile{font-size:12px}}
 </style>
 </head>
 <body>
+<div class="topbar">
+  <div class="brand"><div class="brand-mark">⌂</div><span>شرکت پیمانکاری<br>فـارین گستر فهام</span></div>
+  <div class="top-title">سامانه مدیریت پروژه و منابع شرکت</div>
+  <div class="profile"><div class="profile-icon">♙</div><span>مدیر سیستم　⌄</span></div>
+</div>
 <main>
-<header>
-<div class="kicker">سامانه امین عبدی</div>
-<h1>پنل اولیه سامانه</h1>
-<p class="subtitle">برای ورود به بخش موردنظر، یکی از گزینه‌های زیر را انتخاب کنید.</p>
+<header class="heading">
+  <h1>به پنل مدیریت خوش آمدید</h1>
+  <div class="heading-rule"></div>
+  <p class="subtitle">برای ورود به بخش موردنظر، یکی از گزینه‌های زیر را انتخاب کنید.</p>
 </header>
 <section class="grid" aria-label="بخش‌های سامانه">
-<a class="tile active" href="transactions.html"><div class="symbol" aria-hidden="true">▤</div><h2>کمیسیون معاملات</h2><p>فرآیند معاملات، استعلام بها، مناقصه، کمیسیون و گردش تأییدها.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
-<a class="tile active" href="projects.html"><div class="symbol" aria-hidden="true">▦</div><h2>مدیریت پروژه‌ها</h2><p>پرونده پروژه‌ها، اطلاعات پیمان، برنامه زمان‌بندی و کنترل پیشرفت.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
-<a class="tile active" href="finance.html"><div class="symbol" aria-hidden="true">▣</div><h2>امور مالی و پرداخت‌ها</h2><p>صورت‌حساب‌ها، دریافت و پرداخت، هزینه‌ها، تنخواه و مطالبات.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
-<a class="tile active" href="payroll.html"><div class="symbol" aria-hidden="true">♙</div><h2>حقوق و دستمزد</h2><p>اطلاعات پرسنل، کارکرد، اضافه‌کاری، کسورات و فیش حقوقی.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
-<a class="tile active" href="documents.html"><div class="symbol" aria-hidden="true">▧</div><h2>مدیریت اسناد</h2><p>قراردادها، مکاتبات، صورت‌جلسات، نقشه‌ها و مدارک پروژه.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
-<a class="tile active" href="technical.html"><div class="symbol" aria-hidden="true">⚙</div><h2>بخش فنی و مهندسی</h2><p>صورت‌وضعیت، تعدیل، متره، برآورد، آنالیز بها و امور فنی پیمان.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
-<a class="tile active" href="services.html"><div class="symbol" aria-hidden="true">✦</div><h2>سایر خدمات</h2><p>فرم‌ها و ابزارهای عمومی و پشتیبانی موردنیاز شرکت.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow" aria-hidden="true">←</span></div></a>
+<a class="tile active" href="transactions.html">
+ <div class="art"><svg viewBox="0 0 200 145" role="img" aria-label="کمیسیون معاملات"><defs><linearGradient id="g1" x2="0" y2="1"><stop stop-color="#ffe7a6"/><stop offset=".5" stop-color="#d7a13e"/><stop offset="1" stop-color="#8a5b18"/></linearGradient><linearGradient id="s1" x2="0" y2="1"><stop stop-color="#f8fbff"/><stop offset="1" stop-color="#8295aa"/></linearGradient></defs><path d="M25 116H178" stroke="#e9bd65" stroke-width="3"/><rect x="35" y="83" width="23" height="33" rx="3" fill="url(#s1)"/><rect x="69" y="65" width="23" height="51" rx="3" fill="url(#s1)"/><rect x="103" y="48" width="23" height="68" rx="3" fill="url(#g1)"/><rect x="137" y="29" width="23" height="87" rx="3" fill="url(#g1)"/><path d="M28 75Q83 57 147 14" fill="none" stroke="url(#g1)" stroke-width="6" stroke-linecap="round"/><path d="M130 14l20-3-3 21" fill="none" stroke="#ffe3a0" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+ <h2>کمیسیون معاملات</h2><p>فرآیند معاملات، استعلام بها، مناقصه، کمیسیون و گردش تأییدها.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow">←</span></div>
+</a>
+<a class="tile active" href="projects.html">
+ <div class="art"><svg viewBox="0 0 200 145" role="img" aria-label="مدیریت پروژه‌ها"><defs><linearGradient id="g2" x2="0" y2="1"><stop stop-color="#fff0c2"/><stop offset=".5" stop-color="#dca943"/><stop offset="1" stop-color="#80551d"/></linearGradient><linearGradient id="s2" x2="0" y2="1"><stop stop-color="#eef4fa"/><stop offset="1" stop-color="#71869e"/></linearGradient></defs><path d="M26 120h148" stroke="#d8aa53" stroke-width="3"/><path d="M48 116V54l42-24 42 24v62" fill="none" stroke="url(#s2)" stroke-width="7" stroke-linejoin="round"/><path d="M42 58l48-30 48 30" fill="none" stroke="url(#g2)" stroke-width="7"/><rect x="73" y="77" width="36" height="39" fill="#0b2344" stroke="url(#s2)" stroke-width="5"/><rect x="18" y="99" width="29" height="17" rx="2" fill="url(#g2)"/><rect x="145" y="102" width="34" height="14" rx="2" fill="url(#g2)"/><path d="M154 101V72h15v29m-20-23h24" stroke="url(#g2)" stroke-width="4" fill="none"/></svg></div>
+ <h2>مدیریت پروژه‌ها</h2><p>پرونده پروژه‌ها، اطلاعات پیمان، برنامه زمان‌بندی و کنترل پیشرفت.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow">←</span></div>
+</a>
+<a class="tile active" href="finance.html">
+ <div class="art"><svg viewBox="0 0 200 145" role="img" aria-label="امور مالی"><defs><linearGradient id="g3" x2="0" y2="1"><stop stop-color="#fff0b5"/><stop offset=".45" stop-color="#e9b74f"/><stop offset="1" stop-color="#98631b"/></linearGradient><linearGradient id="s3" x2="0" y2="1"><stop stop-color="#f5f8fb"/><stop offset="1" stop-color="#8d9eaf"/></linearGradient></defs><g fill="url(#g3)" stroke="#ffe1a0" stroke-width="1"><ellipse cx="54" cy="103" rx="26" ry="9"/><rect x="28" y="85" width="52" height="18"/><ellipse cx="54" cy="85" rx="26" ry="9"/><ellipse cx="54" cy="76" rx="26" ry="9"/><rect x="28" y="67" width="52" height="9"/><ellipse cx="54" cy="67" rx="26" ry="9"/><ellipse cx="103" cy="111" rx="25" ry="8"/><rect x="78" y="92" width="50" height="19"/><ellipse cx="103" cy="92" rx="25" ry="8"/><ellipse cx="103" cy="83" rx="25" ry="8"/><rect x="78" y="74" width="50" height="9"/><ellipse cx="103" cy="74" rx="25" ry="8"/></g><path d="M145 32c-14 0-24 10-24 22 0 17 24 48 24 48s24-31 24-48c0-12-10-22-24-22z" fill="url(#s3)" stroke="#e8c16f" stroke-width="3"/><text x="145" y="69" text-anchor="middle" font-size="34" font-weight="bold" fill="#17304c">$</text></svg></div>
+ <h2>امور مالی و پرداخت‌ها</h2><p>صورت‌حساب‌ها، دریافت و پرداخت، هزینه‌ها، تنخواه و مطالبات.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow">←</span></div>
+</a>
+<a class="tile active" href="payroll.html">
+ <div class="art"><svg viewBox="0 0 200 145" role="img" aria-label="حقوق و دستمزد"><defs><linearGradient id="g4" x2="0" y2="1"><stop stop-color="#fff0bc"/><stop offset=".5" stop-color="#e2b04d"/><stop offset="1" stop-color="#8d5b19"/></linearGradient><linearGradient id="s4" x2="0" y2="1"><stop stop-color="#f5f8fc"/><stop offset="1" stop-color="#8a9bad"/></linearGradient></defs><circle cx="48" cy="48" r="19" fill="url(#s4)"/><path d="M17 112q2-43 31-43t31 43" fill="url(#s4)" stroke="#aebdcb" stroke-width="3"/><circle cx="151" cy="48" r="19" fill="url(#s4)"/><path d="M120 112q2-43 31-43t31 43" fill="url(#s4)" stroke="#aebdcb" stroke-width="3"/><circle cx="100" cy="48" r="23" fill="url(#g4)"/><path d="M62 126q2-52 38-52t38 52" fill="url(#s4)" stroke="#e3b456" stroke-width="3"/><path d="M75 30q5-25 25-25t25 25z" fill="url(#g4)" stroke="#ffe3a0" stroke-width="3"/><path d="M80 29h40" stroke="#7f581d" stroke-width="3"/></svg></div>
+ <h2>حقوق و دستمزد</h2><p>اطلاعات پرسنل، کارکرد، اضافه‌کاری، کسورات و فیش حقوقی.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow">←</span></div>
+</a>
+<a class="tile active" href="documents.html">
+ <div class="art"><svg viewBox="0 0 200 145" role="img" aria-label="مدیریت اسناد"><defs><linearGradient id="g5" x2="0" y2="1"><stop stop-color="#fff0bb"/><stop offset="1" stop-color="#bf8731"/></linearGradient><linearGradient id="s5" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#aab7c7"/></linearGradient></defs><path d="M50 20h75l28 28v82H50z" fill="url(#s5)" stroke="#e2b456" stroke-width="4"/><path d="M125 20v29h28" fill="none" stroke="#7d91a8" stroke-width="4"/><path d="M68 65h62M68 81h62M68 97h48" stroke="#607b9a" stroke-width="6" stroke-linecap="round"/><circle cx="145" cy="108" r="24" fill="url(#g5)" stroke="#fff0c5" stroke-width="3"/><path d="M133 108l8 8 16-18" fill="none" stroke="#173454" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+ <h2>مدیریت اسناد</h2><p>قراردادها، مکاتبات، صورت‌جلسات، نقشه‌ها و مدارک پروژه.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow">←</span></div>
+</a>
+<a class="tile active" href="technical.html">
+ <div class="art"><svg viewBox="0 0 200 145" role="img" aria-label="بخش فنی و مهندسی"><defs><linearGradient id="g6" x2="0" y2="1"><stop stop-color="#fff0bd"/><stop offset="1" stop-color="#b47a25"/></linearGradient><linearGradient id="s6" x2="0" y2="1"><stop stop-color="#f8fbff"/><stop offset="1" stop-color="#8799ad"/></linearGradient></defs><path d="M100 18l9 7 12-2 4 12 11 7-4 12 6 11-10 8-1 13-13 2-8 10-11-6-12 6-8-10-13-2-1-13-10-8 6-11-4-12 11-7 4-12 12 2z" fill="url(#s6)" stroke="#e8bd68" stroke-width="3"/><circle cx="100" cy="61" r="21" fill="#102b4b" stroke="#d7e0ea" stroke-width="6"/><path d="M127 89l35 35m-15-47l22 22-14 14-22-22z" fill="url(#g6)" stroke="#ffe2a1" stroke-width="3" stroke-linejoin="round"/></svg></div>
+ <h2>بخش فنی و مهندسی</h2><p>صورت‌وضعیت، تعدیل، متره، برآورد، آنالیز بها و امور فنی پیمان.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow">←</span></div>
+</a>
+<a class="tile active" href="services.html">
+ <div class="art"><svg viewBox="0 0 200 145" role="img" aria-label="سایر خدمات"><defs><linearGradient id="g7" x2="0" y2="1"><stop stop-color="#fff1c3"/><stop offset=".5" stop-color="#e4b14b"/><stop offset="1" stop-color="#9b671f"/></linearGradient><linearGradient id="s7" x2="0" y2="1"><stop stop-color="#f8fbff"/><stop offset="1" stop-color="#879bb0"/></linearGradient></defs><path d="M48 33h91l20 20v77H48z" fill="url(#s7)" stroke="#e2b45e" stroke-width="3"/><path d="M139 33v21h20" fill="none" stroke="#758ca5" stroke-width="4"/><path d="M67 68h65M67 84h65M67 100h43" stroke="#5e7898" stroke-width="6" stroke-linecap="round"/><path d="M147 92l6 14 15 1-11 10 3 15-13-8-13 8 3-15-11-10 15-1z" fill="url(#g7)" stroke="#fff0c1" stroke-width="2"/></svg></div>
+ <h2>سایر خدمات</h2><p>فرم‌ها و ابزارهای عمومی و پشتیبانی موردنیاز شرکت.</p><div class="bottom"><span>ورود به بخش</span><span class="arrow">←</span></div>
+</a>
 </section>
-<footer>سامانه داخلی شرکت · نسخه آزمایشی</footer>
+<footer>سامانه مدیریت پروژه و منابع شرکت · نسخه آزمایشی</footer>
 </main>
-<script type="module" src="app.js"></script></body>
-</html>
+<div class="footer-scene"></div>
+<script type="module" src="app.js"></script>
+</body></html>
