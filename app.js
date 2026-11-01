@@ -126,6 +126,55 @@ async function setupSubmodule(){
  async function load(){list.replaceChildren();const {data,error}=await supabase.from("module_records").select("*").eq("module",moduleName).order("created_at",{ascending:false}).limit(100);if(error){message(status,error.message,true);return;}data.filter(x=>x.details?.submodule===title&&(!projectName||(x.project_name||"")===projectName)&&(!scope||(x.details?.scope||"")===scope)).forEach(x=>{const a=document.createElement("article");a.textContent=[x.title,x.project_name,x.details?.scope,x.reference_no,x.status,x.responsible,JSON.stringify(x.details)].filter(Boolean).join(" | ");list.append(a);});if(!list.children.length)list.textContent="هنوز سابقه‌ای برای این بخش از پروژه ثبت نشده است.";}
  $("#record-save").onclick=async()=>{const titleValue=$("#record-title").value.trim();if(!titleValue){message(status,"عنوان را وارد کنید.",true);return;}const raw=$("#record-amount").value.trim();const amount=Number(raw.replace(/[٬,\\s]/g,""))||0;const {error}=await supabase.from("module_records").insert({module:moduleName,title:titleValue,project_name:$("#record-project").value.trim()||projectName||null,reference_no:$("#record-ref").value.trim()||null,amount,status:$("#record-status").value,responsible:$("#record-owner").value.trim()||null,details:{submodule:title,scope,description:$("#record-details").value}});if(error){message(status,error.message,true);return;}message(status,"اطلاعات ذخیره شد.");["record-title","record-ref","record-amount","record-owner","record-details"].forEach(id=>$("#"+id).value="");$("#record-project").value=projectName;await load();};await load();
 }
+
+function setupModuleCatalog(module) {
+  const main=$("main"); if(!main || $("#module-catalog")) return;
+  const section=document.createElement("section");section.id="module-catalog";
+  section.style.cssText="margin:24px 0;padding:20px;border:1px solid #806c48;border-radius:16px;background:linear-gradient(145deg,#19283d,#101a2a);color:#f3f6fb";
+  const head=document.createElement("div");head.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap";
+  const title=document.createElement("h2");title.textContent="ساختار دلخواه این بخش";title.style.cssText="font-size:18px;margin:0;color:#f3f6fb";
+  const addProject=document.createElement("button");addProject.type="button";addProject.textContent="+ تعریف پروژه جدید";addProject.style.cssText="background:#a88443;color:#101827;border:0;border-radius:9px;padding:10px 14px;font:13px Tahoma;cursor:pointer";
+  head.append(title,addProject);
+  const hint=document.createElement("p");hint.textContent="برای هر بخش می‌توانی پروژه‌های مستقل بسازی و داخل هر پروژه، هر تعداد زیرمجموعه و زیرشاخه با عنوان دلخواه اضافه کنی.";hint.style.cssText="font:12px/2 Tahoma;color:#a9b6c9;margin:10px 0 16px";
+  const status=document.createElement("p");status.style.cssText="font:12px Tahoma;min-height:18px";
+  const tree=document.createElement("div");tree.style.cssText="display:grid;gap:10px";
+  section.append(head,hint,status,tree);
+  main.insertBefore(section,main.children[1]||null);
+  const say=(t,bad=false)=>{status.textContent=t;status.style.color=bad?"#fca5a5":"#5eead4";};
+  const btnStyle="background:#26364b;color:#e8d7b5;border:1px solid #806c48;border-radius:8px;padding:7px 10px;font:11px Tahoma;cursor:pointer";
+  async function addNode(parent=null){
+    const name=prompt(parent?"نام زیرمجموعه جدید را وارد کن:":"نام پروژه جدید را وارد کن:");
+    if(name===null)return;
+    if(!name.trim()){say("عنوان نمی‌تواند خالی باشد.",true);return;}
+    addProject.disabled=true;say("در حال ذخیره...");
+    const {error}=await supabase.from("module_catalog").insert({module,parent_id:parent?.id||null,node_type:parent?"category":"project",name:name.trim()});
+    addProject.disabled=false;
+    if(error){say("ذخیره انجام نشد: "+error.message,true);return;}
+    say("مورد جدید ثبت شد.");await load();
+  }
+  function renderNode(node,depth=0){
+    const wrap=document.createElement("div");wrap.style.cssText="margin-right:"+(depth*18)+"px;padding:12px;border:1px solid #35445a;border-radius:11px;background:#0b1422";
+    const line=document.createElement("div");line.style.cssText="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap";
+    const name=document.createElement("strong");name.textContent=(node.node_type==="project"?"▣ ":"↳ ")+node.name;name.style.cssText="font:13px Tahoma;color:#f3f6fb";
+    const add=document.createElement("button");add.type="button";add.textContent="+ افزودن زیرمجموعه";add.style.cssText=btnStyle;add.onclick=()=>addNode(node);
+    line.append(name,add);wrap.append(line);
+    (node.children||[]).forEach(child=>wrap.append(renderNode(child,depth+1)));
+    return wrap;
+  }
+  async function load(){
+    tree.replaceChildren();say("در حال دریافت ساختار...");
+    const {data,error}=await supabase.from("module_catalog").select("id,module,parent_id,node_type,name,sort_order,created_at").eq("module",module).order("sort_order").order("created_at");
+    if(error){say("دریافت اطلاعات انجام نشد: "+error.message,true);return;}
+    const nodes=new Map(data.map(x=>[x.id,{...x,children:[]} ]));const roots=[];
+    nodes.forEach(n=>{if(n.parent_id&&nodes.has(n.parent_id))nodes.get(n.parent_id).children.push(n);else roots.push(n);});
+    roots.forEach(n=>tree.append(renderNode(n)));
+    if(!roots.length){const empty=document.createElement("p");empty.textContent="هنوز پروژه‌ای در این بخش تعریف نشده است. از دکمه بالا شروع کن.";empty.style.cssText="color:#9aabc1;font:12px Tahoma";tree.append(empty);}
+    say(roots.length+" پروژه در این بخش تعریف شده است.");
+  }
+  addProject.onclick=()=>addNode(null);
+  load();
+}
+
 function setupDataForm(module) {
   const panel=$(".panel"); if(!panel) return;
   const labels=[...panel.querySelectorAll("label")].filter(l=>l.querySelector("input,select,textarea"));
@@ -181,6 +230,6 @@ function setupDataForm(module) {
   if(path==="submodule.html"){await setupSubmodule();return;}
   unifyTheme();
   if(path==="panel.html") decoratePanel();
-  if(moduleMap[path]){addSubmenuLinks(moduleMap[path]);setupDataForm(moduleMap[path]);}
-  if(path==="transactions.html") addSubmenuLinks("transactions");
+  if(moduleMap[path]){setupModuleCatalog(moduleMap[path]);addSubmenuLinks(moduleMap[path]);setupDataForm(moduleMap[path]);}
+  if(path==="transactions.html"){setupModuleCatalog("transactions");addSubmenuLinks("transactions");}
 })();
