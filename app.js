@@ -102,19 +102,23 @@ function decoratePanel(){
  document.querySelectorAll(".card").forEach(card=>{const h=card.querySelector("h2");if(!h)return;const tile=card.closest("section.grid");if(!tile)return;const module=modules[modules.indexOf(path.replace(".html",""))]||path.replace(".html","");const link=document.createElement("a");link.href="submodule.html?module="+encodeURIComponent(module)+"&title="+encodeURIComponent(h.textContent.trim());link.textContent="ورود به زیرمجموعه ←";link.style.cssText="display:inline-block;margin-top:12px;color:#5eead4;text-decoration:none;font-size:12px";card.append(link);card.style.cursor="pointer";});
 }
 function unifyTheme(){
- const style=document.createElement("style");style.textContent=`
+ const style=document.createElement("style");
+ style.textContent=`
  :root{color-scheme:dark;--bg:#0b1220;--panel:#151f31;--line:#293a52;--text:#f3f6fb;--muted:#a9b6c9;--accent:#5eead4}
- @import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap");\n body{background:radial-gradient(ellipse at 50% -20%,#203653 0,transparent 55%),#0b1220!important;color:#f3f6fb!important;font-family:"Vazirmatn",sans-serif!important}\n body *{font-family:"Vazirmatn",sans-serif!important}
+ body{background:radial-gradient(ellipse at 50% -20%,#203653 0,transparent 55%),#0b1220!important;color:#f3f6fb!important;font-family:"IRANSans","IRANSansX","Dana","Yekan","IranSharp","Farhang","Vazirmatn",Tahoma,sans-serif!important}
+ body *{font-family:"IRANSans","IRANSansX","Dana","Yekan","IranSharp","Farhang","Vazirmatn",Tahoma,sans-serif!important}
+ h1,h2,h3,h4,.page-title,.section-title{font-family:"IranSharp","Dana","IRANSans","Yekan","Farhang",sans-serif!important;font-weight:700}
+ button,.button,.btn,.enter,.back{font-family:"Yekan","Dana","IRANSans","IranSharp","Farhang",sans-serif!important;font-weight:600}
+ input,select,textarea{font-family:"Dana","IRANSans","Yekan","Farhang",sans-serif!important}
+ p,span,label,li,td,th,a,small{font-family:"IRANSans","Dana","Yekan","Farhang",sans-serif!important}
  main{max-width:1120px}
  .card,.panel,.tile,.note,.workspace,.step-card{border-color:#293a52!important;border-radius:16px!important}
  .card,.panel,.workspace,.step-card{background:linear-gradient(145deg,#19283d,#121d2e)!important;color:#f3f6fb!important}
  h1,h2,h3{color:#f3f6fb}
- input,select,textarea,button{font-family:Tahoma,"Segoe UI",sans-serif}
  a.back,.back{border-radius:11px!important;color:#5eead4!important;border-color:#367f7c!important}
  button,.primary,.btn-primary{border-radius:10px!important}
  `;document.head.append(style);
 }
-
 async function setupSubmodule(){
  const module=query.get("module"), title=query.get("title")||"زیرمجموعه";
  if(!moduleMap[module+".html"] && !["transactions","projects","finance","payroll","documents","technical","services"].includes(module)){message($("#record-message"),"نشانی زیرمجموعه معتبر نیست.",true);return;}
