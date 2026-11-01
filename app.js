@@ -4,6 +4,7 @@ const SUPABASE_URL = "https://oqolkqwnsivoqnegagdv.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-F4sy_LmvOXS8LFywNnNMQ_akJ91gic";
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const path = location.pathname.split("/").pop() || "index.html";
+const query = new URLSearchParams(location.search);
 const moduleMap = {"projects.html":"projects","finance.html":"finance","payroll.html":"payroll","technical.html":"technical","documents.html":"documents","services.html":"services"};
 const $ = (s, root=document) => root.querySelector(s);
 
@@ -50,6 +51,18 @@ function addUserBar(profile) {
   const out=document.createElement("button");out.textContent="خروج";out.style.cssText="background:#26364b;color:#fff;border:1px solid #40536d;border-radius:8px;padding:8px 14px;cursor:pointer";
   out.onclick=async()=>{await supabase.auth.signOut();location.replace("login.html");};
   bar.append(who,out);main.prepend(bar);
+}
+function decoratePanel(){
+ document.querySelectorAll(".tile").forEach((tile,i)=>{const symbols=["▤","▦","◈","♙","▧","⌘","✦"];const s=tile.querySelector(".symbol");if(s)s.textContent=symbols[i]||"✧";});
+}
+async function setupSubmodule(){
+ const module=query.get("module"), title=query.get("title")||"زیرمجموعه";
+ if(!moduleMap[module+".html"] && !["transactions","projects","finance","payroll","documents","technical","services"].includes(module)){message($("#record-message"),"نشانی زیرمجموعه معتبر نیست.",true);return;}
+ const moduleName=module==="transactions"?"transactions":module;
+ $("#sub-title").textContent=title;document.title=title+" | سامانه امین عبدی";$("#sub-desc").textContent="ثبت، نگهداری و پیگیری اطلاعات مربوط به "+title;
+ const status=$("#record-message"), list=$("#record-list");
+ async function load(){list.replaceChildren();const {data,error}=await supabase.from("module_records").select("*").eq("module",moduleName).order("created_at",{ascending:false}).limit(50);if(error){message(status,error.message,true);return;}data.filter(x=>x.details?.submodule===title).forEach(x=>{const a=document.createElement("article");a.textContent=[x.title,x.project_name,x.reference_no,x.status,x.responsible,JSON.stringify(x.details)].filter(Boolean).join(" | ");list.append(a);});if(!list.children.length)list.textContent="هنوز سابقه‌ای برای این زیرمجموعه ثبت نشده است.";}
+ $("#record-save").onclick=async()=>{const titleValue=$("#record-title").value.trim();if(!titleValue){message(status,"عنوان را وارد کنید.",true);return;}const raw=$("#record-amount").value.trim();const amount=Number(raw.replace(/[٬,\\s]/g,""))||0;const {error}=await supabase.from("module_records").insert({module:moduleName,title:titleValue,project_name:$("#record-project").value.trim()||null,reference_no:$("#record-ref").value.trim()||null,amount,status:$("#record-status").value,responsible:$("#record-owner").value.trim()||null,details:{submodule:title,description:$("#record-details").value}});if(error){message(status,error.message,true);return;}message(status,"اطلاعات ذخیره شد.");["record-title","record-project","record-ref","record-amount","record-owner","record-details"].forEach(id=>$("#"+id).value="");await load();};await load();
 }
 function setupDataForm(module) {
   const panel=$(".panel"); if(!panel) return;
@@ -103,5 +116,7 @@ function setupDataForm(module) {
 (async()=>{
   if(path==="login.html"){await loginPage();return;}
   if(!(await protectPage()))return;
+  if(path==="submodule.html"){await setupSubmodule();return;}
+  if(path==="panel.html") decoratePanel();
   if(moduleMap[path])setupDataForm(moduleMap[path]);
 })();
