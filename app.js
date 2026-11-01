@@ -19,6 +19,46 @@ async function profileFor(user) {
   if(!data.is_active || !data.is_admin) throw new Error("حساب شما فعال یا دارای دسترسی مدیریتی نیست.");
   return data;
 }
+
+async function recoveryPage(){
+ const form=$("#recovery-form"), status=$("#recovery-status");
+ form.addEventListener("submit",async e=>{
+  e.preventDefault();const email=$("#recovery-email").value.trim();
+  const btn=form.querySelector("button");btn.disabled=true;message(status,"در حال ارسال لینک بازیابی...");
+  try{
+   const redirectTo=new URL("reset-password.html",location.href).href;
+   const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo});
+   if(error)throw error;
+   message(status,"لینک بازیابی ارسال شد. صندوق ورودی و پوشه هرزنامه را بررسی کنید.");
+  }catch(err){message(status,err.message||"ارسال ایمیل انجام نشد.",true);}
+  finally{btn.disabled=false;}
+ });
+}
+async function resetPasswordPage(){
+ const form=$("#reset-form"),status=$("#reset-status");
+ let recoveryReady=false;
+ const enable=()=>{recoveryReady=true;};
+ supabase.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"&&session)enable();});
+ const {data:{session}}=await supabase.auth.getSession();
+ if(session)enable();
+ form.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const password=$("#new-password").value,confirm=$("#confirm-password").value;
+  if(password.length<8){message(status,"رمز عبور باید حداقل ۸ کاراکتر باشد.",true);return;}
+  if(password!==confirm){message(status,"تکرار رمز عبور با رمز جدید مطابقت ندارد.",true);return;}
+  const btn=form.querySelector("button");btn.disabled=true;message(status,"در حال ثبت رمز جدید...");
+  try{
+   const {data:{session:current}}=await supabase.auth.getSession();
+   if(!recoveryReady&&!current)throw new Error("نشست بازیابی معتبر نیست. دوباره از صفحه ورود درخواست لینک بازیابی کنید.");
+   const {error}=await supabase.auth.updateUser({password});
+   if(error)throw error;
+   await supabase.auth.signOut();
+   message(status,"رمز عبور با موفقیت تغییر کرد. در حال انتقال به صفحه ورود...");
+   setTimeout(()=>location.replace("login.html"),1200);
+  }catch(err){message(status,err.message||"تغییر رمز انجام نشد.",true);btn.disabled=false;}
+ });
+}
+
 async function loginPage() {
   const form=$("#login-form"), status=$("#login-status");
   form.addEventListener("submit",async e=>{
@@ -134,7 +174,7 @@ function setupDataForm(module) {
   load();
 }
 (async()=>{
-  if(path==="login.html"){await loginPage();return;}
+  if(path==="login.html"){await loginPage();return;}\n  if(path==="recovery.html"){await recoveryPage();return;}\n  if(path==="reset-password.html"){await resetPasswordPage();return;}
   if(!(await protectPage()))return;
   if(path==="submodule.html"){await setupSubmodule();return;}
   unifyTheme();
