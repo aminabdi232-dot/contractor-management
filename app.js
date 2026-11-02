@@ -93,7 +93,8 @@ async function protectPage() {
   if(!session){location.replace("login.html");return false;}
   try {
     const profile=await profileFor(session.user);
-    await loadGlobalTheme();\n    addUserBar(profile);
+    await loadGlobalTheme();
+    addUserBar(profile);
     if(path==="panel.html" && profile.is_admin){ setupUserManagement(); setupThemeSettings(); }
     return true;
   } catch(e){await supabase.auth.signOut();location.replace("login.html?reason=access");return false;}
