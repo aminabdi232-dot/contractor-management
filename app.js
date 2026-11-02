@@ -170,7 +170,7 @@ function addUserBar(profile) {
     settings:'<circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.6-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.4-2.4 1.7.6a8 8 0 0 1 1.5-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.5.9l1.7-.6 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.8z"/>',
     grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'
   };
-  const current=path==="submodule.html"?(query.get("module")+".html"):path;
+  const current=path==="submodule.html"?(query.get("module")+".html"):(path==="technical-project.html"?"technical.html":path);
   const side=document.createElement("aside");side.id="app-sidebar";side.setAttribute("aria-label","منوی اصلی سامانه");
   side.innerHTML=`
    <div class="sidebar-brand">
@@ -180,7 +180,7 @@ function addUserBar(profile) {
    <div class="sidebar-caption">منوی اصلی</div>
    <nav class="sidebar-nav">${items.map(([href,label,key])=>`<a class="sidebar-link ${current===href?"is-active":""}" href="${href}" ${current===href?'aria-current="page"':""}><svg viewBox="0 0 24 24">${icons[key]}</svg><span>${label}</span></a>`).join("")}</nav>
    <div class="sidebar-bottom">
-    ${profile.is_admin?'<button type="button" class="sidebar-action" data-side-action="users"><svg viewBox="0 0 24 24">'+icons.users+'</svg><span>مدیریت کاربران</span></button><button type="button" class="sidebar-action" data-side-action="appearance"><svg viewBox="0 0 24 24">'+icons.settings+'</svg><span>تنظیمات ظاهر</span></button>':""}
+    ${profile.is_admin&&path==="panel.html"?'<button type="button" class="sidebar-action" data-side-action="users"><svg viewBox="0 0 24 24">'+icons.users+'</svg><span>مدیریت کاربران</span></button><button type="button" class="sidebar-action" data-side-action="appearance"><svg viewBox="0 0 24 24">'+icons.settings+'</svg><span>تنظیمات ظاهر</span></button>':""}
     <div class="sidebar-user"><div class="sidebar-avatar">${(profile.full_name||"ک").trim().charAt(0)}</div><div class="sidebar-user-text"><strong>${profile.full_name||"کاربر سامانه"}</strong><span>${profile.is_admin?"مدیر سامانه":"کاربر"}</span></div></div>
     <button type="button" class="sidebar-logout"><svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M21 3v18"/></svg><span>خروج از سامانه</span></button>
    </div>`;
