@@ -153,7 +153,7 @@ function addUserBar(profile) {
   const items=[
     ["panel.html","خانه","home"],
     ["projects.html","مدیریت پروژه‌ها","building"],
-undefined    ["documents.html","مدیریت اسناد","file"],
+    ["documents.html","مدیریت اسناد","file"],
     ["technical.html","فنی و مهندسی","settings"],
     ["services.html","سایر خدمات","grid"]
   ];
