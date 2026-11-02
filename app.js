@@ -149,20 +149,51 @@ function setupUserManagement(){
   });
 }
 function addUserBar(profile) {
-  const main=$("main"); if(!main || $("#user-bar")) return;
-  const bar=document.createElement("div");bar.id="user-bar";
-  bar.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 18px;padding:10px 14px;border:1px solid #293a52;border-radius:12px;background:#111c2c;color:#a9b6c9;font:12px Tahoma,sans-serif";
-  const who=document.createElement("span");who.textContent="کاربر: "+(profile.full_name||"مدیر سامانه");
-  const actions=document.createElement("div");actions.style.cssText="display:flex;align-items:center;gap:8px";
-  if(profile.is_admin){
-    const users=document.createElement("button");users.type="button";users.textContent="♙ مدیریت کاربران";users.title="ایجاد و مدیریت حساب‌های کاربری";
-    users.style.cssText="background:#6b5125;color:#ffe2a0;border:1px solid #b98535;border-radius:8px;padding:8px 12px;cursor:pointer";
-    users.onclick=()=>{const section=$("#user-management");if(!section)return;const opening=section.style.display==="none";section.style.display=opening?"block":"none";if(opening)section.scrollIntoView({behavior:"smooth",block:"start"});};
-    actions.append(users);
-  }
-  const out=document.createElement("button");out.textContent="خروج";out.style.cssText="background:#26364b;color:#fff;border:1px solid #40536d;border-radius:8px;padding:8px 14px;cursor:pointer";
-  out.onclick=async()=>{await supabase.auth.signOut();location.replace("login.html");};
-  actions.append(out);bar.append(who,actions);main.prepend(bar);
+  if($("#app-sidebar")) return;
+  const items=[
+    ["panel.html","خانه","home"],
+    ["transactions.html","کمیسیون معاملات","briefcase"],
+    ["projects.html","مدیریت پروژه‌ها","building"],
+    ["finance.html","امور مالی و پرداخت‌ها","wallet"],
+    ["payroll.html","حقوق و دستمزد","users"],
+    ["documents.html","مدیریت اسناد","file"],
+    ["technical.html","فنی و مهندسی","settings"],
+    ["services.html","سایر خدمات","grid"]
+  ];
+  const icons={
+    home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/>',
+    briefcase:'<rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2"/>',
+    building:'<path d="M3 21h18M5 21V5l7-3 7 3v16M9 21v-5h6v5M8 8h1m6 0h1M8 12h1m6 0h1"/>',
+    wallet:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9h18M16 14h2"/>',
+    users:'<path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm10 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+    file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h8"/>',
+    settings:'<circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.6-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.4-2.4 1.7.6a8 8 0 0 1 1.5-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.5.9l1.7-.6 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.8z"/>',
+    grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'
+  };
+  const current=path==="submodule.html"?(query.get("module")+".html"):path;
+  const side=document.createElement("aside");side.id="app-sidebar";side.setAttribute("aria-label","منوی اصلی سامانه");
+  side.innerHTML=`
+   <div class="sidebar-brand">
+    <div class="sidebar-logo"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg></div>
+    <div class="sidebar-brand-text"><strong>سامانه مدیریت</strong><span>پروژه و منابع شرکت</span></div>
+   </div>
+   <div class="sidebar-caption">منوی اصلی</div>
+   <nav class="sidebar-nav">${items.map(([href,label,key])=>`<a class="sidebar-link ${current===href?"is-active":""}" href="${href}" ${current===href?'aria-current="page"':""}><svg viewBox="0 0 24 24">${icons[key]}</svg><span>${label}</span></a>`).join("")}</nav>
+   <div class="sidebar-bottom">
+    ${profile.is_admin?'<button type="button" class="sidebar-action" data-side-action="users"><svg viewBox="0 0 24 24">'+icons.users+'</svg><span>مدیریت کاربران</span></button><button type="button" class="sidebar-action" data-side-action="appearance"><svg viewBox="0 0 24 24">'+icons.settings+'</svg><span>تنظیمات ظاهر</span></button>':""}
+    <div class="sidebar-user"><div class="sidebar-avatar">${(profile.full_name||"ک").trim().charAt(0)}</div><div class="sidebar-user-text"><strong>${profile.full_name||"کاربر سامانه"}</strong><span>${profile.is_admin?"مدیر سامانه":"کاربر"}</span></div></div>
+    <button type="button" class="sidebar-logout"><svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M21 3v18"/></svg><span>خروج از سامانه</span></button>
+   </div>`;
+  document.body.append(side);
+  document.body.classList.add("has-app-sidebar");
+  side.querySelectorAll("[data-side-action]").forEach(btn=>btn.addEventListener("click",()=>{
+    const target=btn.dataset.sideAction==="users"?"#user-management":"#theme-settings";
+    const section=$(target);
+    if(!section)return;
+    if(btn.dataset.sideAction==="users")section.style.display=section.style.display==="none"?"block":"none";
+    section.scrollIntoView({behavior:"smooth",block:"start"});
+  }));
+  side.querySelector(".sidebar-logout").addEventListener("click",async()=>{await supabase.auth.signOut();location.replace("login.html");});
 }
 function addSubmenuLinks(module){
  document.querySelectorAll(".card").forEach(card=>{const h=card.querySelector("h2");if(!h||card.querySelector(".submenu-link"))return;const link=document.createElement("a");link.className="submenu-link";link.href="submodule.html?module="+encodeURIComponent(module)+"&title="+encodeURIComponent(h.textContent.trim());link.textContent="ورود به زیرمجموعه ←";link.style.cssText="display:inline-block;margin-top:12px;color:#5eead4;text-decoration:none;font-size:12px";card.append(link);});
@@ -211,7 +242,44 @@ function applyTheme(theme){
  #theme-settings p{color:${palette.muted}!important}
  #theme-settings button[data-theme-choice]{border-color:${palette.border}!important;background:${palette.panel2}!important;color:#f3f6fb!important}
  #user-management{background:linear-gradient(145deg,${palette.panel2},${palette.panel})!important;border-color:${palette.border}!important}
- `;
+ 
+ #app-sidebar{position:fixed;z-index:1000;left:0;top:0;bottom:0;width:258px;direction:rtl;display:flex;flex-direction:column;padding:24px 16px 18px;background:linear-gradient(180deg,${palette.panel2} 0%,${palette.bg} 100%);border-right:1px solid ${palette.border};box-shadow:12px 0 35px #0005;color:#f3f6fb}
+ #app-sidebar *{box-sizing:border-box}
+ .sidebar-brand{display:flex;align-items:center;gap:12px;padding:4px 7px 24px;border-bottom:1px solid ${palette.border}}
+ .sidebar-logo{width:44px;height:44px;flex:0 0 44px;display:grid;place-items:center;border:1px solid ${palette.accent};border-radius:14px;color:${palette.accent2};background:${palette.glow};box-shadow:0 0 22px ${palette.accent}22}
+ .sidebar-logo svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+ .sidebar-brand-text{display:flex;flex-direction:column;gap:5px}.sidebar-brand-text strong{font-size:14px}.sidebar-brand-text span{font-size:10px;color:${palette.muted}}
+ .sidebar-caption{font-size:10px;color:${palette.muted};padding:23px 10px 10px}
+ .sidebar-nav{display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+ .sidebar-link,.sidebar-action,.sidebar-logout{display:flex;align-items:center;gap:12px;min-height:45px;padding:10px 12px;border:1px solid transparent;border-radius:11px;background:transparent;color:${palette.muted};text-decoration:none;font-size:12px;text-align:right;cursor:pointer;transition:.18s}
+ .sidebar-link svg,.sidebar-action svg,.sidebar-logout svg{width:19px;height:19px;flex:0 0 19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+ .sidebar-link:hover,.sidebar-action:hover,.sidebar-logout:hover{background:${palette.panel2};color:#fff;border-color:${palette.border}}
+ .sidebar-link.is-active{background:linear-gradient(90deg,${palette.glow},${palette.panel2});border-color:${palette.border};color:${palette.accent2};box-shadow:inset 3px 0 0 ${palette.accent},0 5px 18px #0002}
+ .sidebar-bottom{margin-top:auto;padding-top:15px;border-top:1px solid ${palette.border};display:flex;flex-direction:column;gap:7px}
+ .sidebar-action{width:100%;font-family:inherit}
+ .sidebar-user{display:flex;align-items:center;gap:10px;padding:12px 7px 7px}
+ .sidebar-avatar{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:50%;background:${palette.glow};border:1px solid ${palette.border};color:${palette.accent2};font-weight:800}
+ .sidebar-user-text{display:flex;flex-direction:column;gap:4px;min-width:0}.sidebar-user-text strong{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sidebar-user-text span{font-size:10px;color:${palette.muted}}
+ .sidebar-logout{width:100%;color:#fca5a5;font-family:inherit}
+ body.has-app-sidebar main{width:calc(100% - 258px)!important;max-width:none!important;margin:0 0 0 258px!important}
+ body.has-app-sidebar .topbar{margin-left:258px}
+ body.has-app-sidebar footer{margin-left:258px}
+ @media(max-width:760px){
+  #app-sidebar{width:76px;padding:18px 9px 12px;align-items:center}
+  .sidebar-brand{padding:0 0 18px;justify-content:center;width:100%}
+  .sidebar-logo{width:42px;height:42px;flex-basis:42px}
+  .sidebar-brand-text,.sidebar-caption,.sidebar-link span,.sidebar-action span,.sidebar-logout span,.sidebar-user-text{display:none}
+  .sidebar-nav{width:100%;align-items:center;gap:8px}
+  .sidebar-link,.sidebar-action,.sidebar-logout{width:54px;height:48px;min-height:48px;justify-content:center;padding:0}
+  .sidebar-link svg,.sidebar-action svg,.sidebar-logout svg{width:21px;height:21px}
+  .sidebar-bottom{width:100%;align-items:center}
+  .sidebar-user{justify-content:center;padding:10px 0}
+  .sidebar-avatar{width:34px;height:34px}
+  body.has-app-sidebar main{width:calc(100% - 76px)!important;margin-left:76px!important}
+  body.has-app-sidebar .topbar{margin-left:76px}
+  body.has-app-sidebar footer{margin-left:76px}
+ }
+`;
  document.head.append(style);
 }
 async function loadGlobalTheme(){
