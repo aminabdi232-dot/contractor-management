@@ -210,7 +210,6 @@ function decoratePanel(){
   if(art)art.innerHTML='<svg viewBox="0 0 96 96" role="img" aria-hidden="true"><defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a7f3d0"/><stop offset="1" stop-color="#059669"/></linearGradient></defs><circle cx="48" cy="48" r="43" fill="#ffffff0b" stroke="#6ee7b7" stroke-opacity=".35" stroke-width="1.5"/>'+artwork[i]+'</svg>';
  });
  document.querySelectorAll(".tile h2").forEach(h=>{h.style.fontSize="20px";h.style.fontWeight="900";});
- document.querySelectorAll(".card").forEach(card=>{const h=card.querySelector("h2");if(!h)return;const tile=card.closest("section.grid");if(!tile)return;const module=modules[modules.indexOf(path.replace(".html",""))]||path.replace(".html","");const link=document.createElement("a");link.href="submodule.html?module="+encodeURIComponent(module)+"&title="+encodeURIComponent(h.textContent.trim());link.textContent="ورود به زیرمجموعه ←";link.style.cssText="display:inline-block;margin-top:12px;color:#5eead4;text-decoration:none;font-size:12px";card.append(link);card.style.cursor="pointer";});
 }
 function applyTheme(theme){
  const green=theme==="green";
