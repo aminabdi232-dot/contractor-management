@@ -93,8 +93,8 @@ async function protectPage() {
   if(!session){location.replace("login.html");return false;}
   try {
     const profile=await profileFor(session.user);
-    addUserBar(profile);
-    if(path==="panel.html" && profile.is_admin) setupUserManagement();
+    await loadGlobalTheme();\n    addUserBar(profile);
+    if(path==="panel.html" && profile.is_admin){ setupUserManagement(); setupThemeSettings(); }
     return true;
   } catch(e){await supabase.auth.signOut();location.replace("login.html?reason=access");return false;}
 }
@@ -172,21 +172,66 @@ function decoratePanel(){
  document.querySelectorAll(".tile").forEach((tile,i)=>{tile.href=modules[i]+".html";});
  document.querySelectorAll(".card").forEach(card=>{const h=card.querySelector("h2");if(!h)return;const tile=card.closest("section.grid");if(!tile)return;const module=modules[modules.indexOf(path.replace(".html",""))]||path.replace(".html","");const link=document.createElement("a");link.href="submodule.html?module="+encodeURIComponent(module)+"&title="+encodeURIComponent(h.textContent.trim());link.textContent="ورود به زیرمجموعه ←";link.style.cssText="display:inline-block;margin-top:12px;color:#5eead4;text-decoration:none;font-size:12px";card.append(link);card.style.cursor="pointer";});
 }
-function unifyTheme(){
- const style=document.createElement("style");
+function applyTheme(theme){
+ const green=theme==="green";
+ const palette=green?{
+  accent:"#34d399",accent2:"#a7f3d0",border:"#23765c",bg:"#071a16",panel:"#102820",panel2:"#15372d",muted:"#a7c7b9",glow:"#0c3d2d"
+ }:{
+  accent:"#5eead4",accent2:"#99f6e4",border:"#367f7c",bg:"#0b1220",panel:"#151f31",panel2:"#19283d",muted:"#a9b6c9",glow:"#203653"
+ };
+ document.documentElement.dataset.theme=green?"green":"blue";
+ const old=document.getElementById("global-theme-style");if(old)old.remove();
+ const style=document.createElement("style");style.id="global-theme-style";
  style.textContent=`
- :root{color-scheme:dark;--bg:#0b1220;--panel:#151f31;--line:#293a52;--text:#f3f6fb;--muted:#a9b6c9;--accent:#5eead4}
- body{background:radial-gradient(ellipse at 50% -20%,#203653 0,transparent 55%),#0b1220!important;color:#f3f6fb!important;font-family:"Vazirmatn",sans-serif!important}
- body *{font-family:"Vazirmatn",sans-serif!important}
- main{max-width:1120px}
- .card,.panel,.tile,.note,.workspace,.step-card{border-color:#293a52!important;border-radius:16px!important}
- .card,.panel,.workspace,.step-card{background:linear-gradient(145deg,#19283d,#121d2e)!important;color:#f3f6fb!important}
- h1,h2,h3{color:#f3f6fb}
- input,select,textarea,button{font-family:"Vazirmatn",sans-serif!important}
- a.back,.back{border-radius:11px!important;color:#5eead4!important;border-color:#367f7c!important}
- button,.primary,.btn-primary{border-radius:10px!important}
- `;document.head.append(style);
+ :root{color-scheme:dark;--app-accent:${palette.accent};--app-accent-soft:${palette.accent2};--app-line:${palette.border};--app-bg:${palette.bg};--app-panel:${palette.panel};--app-muted:${palette.muted}}
+ body{background:radial-gradient(ellipse at 50% -20%,${palette.glow} 0,transparent 55%),${palette.bg}!important;color:#f3f6fb!important;font-family:"Vazirmatn",sans-serif!important}
+ body *{font-family:"Vazirmatn",sans-serif}
+ .card,.panel,.workspace,.step-card,#module-catalog,#user-bar{border-color:${palette.border}!important}
+ .card,.panel,.workspace,.step-card,#module-catalog{background:linear-gradient(145deg,${palette.panel2},${palette.panel})!important;color:#f3f6fb!important}
+ .tile{border-color:${palette.border}!important;background:linear-gradient(145deg,${palette.panel2},${palette.bg})!important}
+ .tile:after{background:linear-gradient(90deg,transparent,${palette.accent2},transparent)!important}
+ .tile:hover{border-color:${palette.accent2}!important}
+ h1,h2,h3,.top-title{color:#f3f6fb}
+ a.back,.back,.submenu-link{color:${palette.accent}!important;border-color:${palette.border}!important}
+ button,.primary,.btn-primary{border-radius:10px}
+ input,select,textarea{border-color:${palette.border}!important}
+ `;
+ document.head.append(style);
 }
+async function loadGlobalTheme(){
+ try{
+  const {data,error}=await supabase.from("app_settings").select("setting_value").eq("setting_key","appearance").maybeSingle();
+  if(error)throw error;
+  applyTheme(data?.setting_value?.theme==="green"?"green":"blue");
+ }catch(e){console.warn("Global appearance setting unavailable; using blue theme.",e);applyTheme("blue");}
+}
+function setupThemeSettings(){
+ const main=$("main");if(!main||$("#theme-settings"))return;
+ const section=document.createElement("section");section.id="theme-settings";
+ section.style.cssText="display:none;margin:0 0 22px;padding:20px;border:1px solid var(--app-line);border-radius:16px;background:linear-gradient(145deg,#19283d,#101a2a);color:#f3f6fb";
+ section.innerHTML=`
+ <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:23px">🎨</span><h2 style="margin:0;font-size:19px">تنظیمات ظاهر سامانه</h2></div>
+ <p style="margin:0 0 14px;color:#a9b6c9;font-size:13px;line-height:2">انتخاب مدیر برای تمام کاربران و تمام دستگاه‌ها اعمال می‌شود.</p>
+ <div style="display:flex;gap:10px;flex-wrap:wrap">
+ <button type="button" data-theme-choice="blue" style="padding:11px 18px;border:1px solid #367f7c;border-radius:10px;background:#173653;color:white;cursor:pointer">🔵 تم آبی</button>
+ <button type="button" data-theme-choice="green" style="padding:11px 18px;border:1px solid #23765c;border-radius:10px;background:#123d2e;color:white;cursor:pointer">🟢 تم سبز</button>
+ </div><p id="theme-setting-status" role="status" style="min-height:20px;margin:12px 0 0;font-size:12px"></p>`;
+ const heading=main.querySelector(".heading");
+ if(heading?.nextSibling)main.insertBefore(section,heading.nextSibling);else main.prepend(section);
+ section.querySelectorAll("[data-theme-choice]").forEach(btn=>btn.addEventListener("click",async()=>{
+  const theme=btn.dataset.themeChoice,status=$("#theme-setting-status",section);
+  section.querySelectorAll("button").forEach(b=>b.disabled=true);
+  status.textContent="در حال ذخیره و تعمیم به همه کاربران...";
+  try{
+   const {data:{user}}=await supabase.auth.getUser();
+   const {error}=await supabase.from("app_settings").upsert({setting_key:"appearance",setting_value:{theme},updated_by:user.id,updated_at:new Date().toISOString()},{onConflict:"setting_key"});
+   if(error)throw error;
+   applyTheme(theme);status.textContent=theme==="green"?"تم سبز برای همه کاربران فعال شد.":"تم آبی برای همه کاربران فعال شد.";
+  }catch(e){status.textContent="ذخیره انجام نشد: "+(e.message||"خطای نامشخص");}
+  finally{section.querySelectorAll("button").forEach(b=>b.disabled=false);}
+ }));
+}
+
 async function setupSubmodule(){
  const module=query.get("module"), title=query.get("title")||"زیرمجموعه";
  if(!moduleMap[module+".html"] && !["transactions","projects","finance","payroll","documents","technical","services"].includes(module)){message($("#record-message"),"نشانی زیرمجموعه معتبر نیست.",true);return;}
@@ -312,7 +357,7 @@ function setupDataForm(module) {
   // تمام صفحات داخلی فقط پس از ورود معتبر در دسترس هستند.
   if(!(await protectPage())) return;
   if(path==="submodule.html"){await setupSubmodule();return;}
-  unifyTheme();
+
   if(path==="panel.html") decoratePanel();
   if(moduleMap[path]){setupModuleCatalog(moduleMap[path]);addSubmenuLinks(moduleMap[path]);setupDataForm(moduleMap[path]);}
   if(path==="transactions.html"){setupModuleCatalog("transactions");addSubmenuLinks("transactions");}
