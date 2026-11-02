@@ -184,18 +184,33 @@ function applyTheme(theme){
  const old=document.getElementById("global-theme-style");if(old)old.remove();
  const style=document.createElement("style");style.id="global-theme-style";
  style.textContent=`
- :root{color-scheme:dark;--app-accent:${palette.accent};--app-accent-soft:${palette.accent2};--app-line:${palette.border};--app-bg:${palette.bg};--app-panel:${palette.panel};--app-muted:${palette.muted}}
+ :root{color-scheme:dark;--app-accent:${palette.accent};--app-accent-soft:${palette.accent2};--app-line:${palette.border};--app-bg:${palette.bg};--app-panel:${palette.panel};--app-panel-2:${palette.panel2};--app-muted:${palette.muted}}
  body{background:radial-gradient(ellipse at 50% -20%,${palette.glow} 0,transparent 55%),${palette.bg}!important;color:#f3f6fb!important;font-family:"Vazirmatn",sans-serif!important}
  body *{font-family:"Vazirmatn",sans-serif}
- .card,.panel,.workspace,.step-card,#module-catalog,#user-bar{border-color:${palette.border}!important}
- .card,.panel,.workspace,.step-card,#module-catalog{background:linear-gradient(145deg,${palette.panel2},${palette.panel})!important;color:#f3f6fb!important}
- .tile{border-color:${palette.border}!important;background:linear-gradient(145deg,${palette.panel2},${palette.bg})!important}
- .tile:after{background:linear-gradient(90deg,transparent,${palette.accent2},transparent)!important}
+ .card,.panel,.workspace,.step-card,#module-catalog,#user-bar,#theme-settings,#user-management,
+ .grid>.tile,.tile.active,.form-card,.data-card,.record-card,.catalog-card,.submenu,.content-box,.section-card{
+  border-color:${palette.border}!important;
+  background:linear-gradient(145deg,${palette.panel2},${palette.panel})!important;
+  color:#f3f6fb!important
+ }
+ .tile,.tile.active{border-color:${palette.border}!important;background:linear-gradient(145deg,${palette.panel2},${palette.bg})!important;color:#f3f6fb!important}
+ .tile:before{background:radial-gradient(ellipse at 50% 0,${green?"rgba(52,211,153,.18)":"rgba(94,234,212,.12)"},transparent 58%)!important}
+ .tile:after{background:linear-gradient(90deg,transparent,${palette.accent2},transparent)!important;box-shadow:0 0 12px ${palette.accent}!important}
  .tile:hover{border-color:${palette.accent2}!important}
- h1,h2,h3,.top-title{color:#f3f6fb}
+ .topbar{border-color:${palette.border}!important;background:linear-gradient(90deg,${palette.bg},${palette.panel2},${palette.bg})!important}
+ .brand,.brand-mark,.profile-icon{color:${palette.accent2}!important;border-color:${palette.accent}!important}
+ .brand-mark,.profile-icon{box-shadow:0 0 20px ${green?"#34d39935":"#5eead435"}!important}
+ .heading-rule{background:linear-gradient(90deg,transparent,${palette.accent},transparent)!important}
+ .bottom,.bottom span:first-child{color:${palette.accent2}!important}
+ .art svg,.brand-mark svg,.profile-icon svg{filter:hue-rotate(${green?"48deg":"0deg"}) saturate(${green?"1.2":"1"}) drop-shadow(0 7px 7px #0007)!important}
+ .tile h2,h1,h2,h3,.top-title{color:#f3f6fb!important}
+ .tile p,.subtitle,.muted{color:${palette.muted}!important}
  a.back,.back,.submenu-link{color:${palette.accent}!important;border-color:${palette.border}!important}
  button,.primary,.btn-primary{border-radius:10px}
- input,select,textarea{border-color:${palette.border}!important}
+ input,select,textarea{border-color:${palette.border}!important;background-color:${palette.bg}!important;color:#f3f6fb!important}
+ #theme-settings p{color:${palette.muted}!important}
+ #theme-settings button[data-theme-choice]{border-color:${palette.border}!important;background:${palette.panel2}!important;color:#f3f6fb!important}
+ #user-management{background:linear-gradient(145deg,${palette.panel2},${palette.panel})!important;border-color:${palette.border}!important}
  `;
  document.head.append(style);
 }
