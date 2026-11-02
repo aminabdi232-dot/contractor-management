@@ -12,10 +12,10 @@ body{margin:0;min-height:100vh;font-family:Tahoma,"Segoe UI",sans-serif;color:va
 body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background:repeating-linear-gradient(135deg,transparent 0 95px,rgba(224,177,88,.16) 96px,transparent 98px 190px)}
 .topbar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:22px;padding:18px clamp(18px,4vw,58px);border-bottom:1px solid rgba(232,185,87,.75);background:linear-gradient(90deg,rgba(3,14,31,.97),rgba(14,39,70,.96),rgba(3,14,31,.97));box-shadow:0 8px 28px #020b18a8}
 .brand{display:flex;align-items:center;gap:14px;color:var(--gold2);font-weight:800;font-size:17px;line-height:1.8}
-.brand-mark{width:58px;height:58px;border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-size:29px;box-shadow:0 0 20px #e8b95735}
+.brand-mark{width:58px;height:58px;border:2px solid var(--gold);border-radius:18px;display:grid;place-items:center;color:var(--gold);box-shadow:0 0 20px #e8b95735}.brand-mark svg{width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .top-title{font-size:clamp(17px,2.4vw,27px);font-weight:800;color:var(--gold2);text-align:center}
 .profile{display:flex;align-items:center;gap:10px;color:#f2f5fa;font-size:13px;white-space:nowrap}
-.profile-icon{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--gold);color:var(--gold);font-size:22px}
+.profile-icon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;border:1px solid var(--gold);color:var(--gold)}.profile-icon svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 main{width:min(1320px,100%);margin:auto;padding:42px 24px 110px;position:relative;z-index:1}
 .heading{text-align:center;margin:0 auto 38px}
 h1{font-size:clamp(26px,4vw,40px);margin:0 0 15px;font-weight:900;text-shadow:0 3px 12px #0008}
@@ -42,9 +42,9 @@ footer{text-align:center;color:#879bb5;font-size:11px;margin-top:34px}
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"></head>
 <body>
 <div class="topbar">
-  <div class="brand"><div class="brand-mark">⌂</div><span>امین عبدی</span></div>
+  <div class="brand"><div class="brand-mark" aria-label="خانه"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg></div><span>امین عبدی</span></div>
   <div class="top-title">سامانه مدیریت پروژه و منابع شرکت</div>
-  <div class="profile"><div class="profile-icon">♙</div><span>مدیر سیستم　⌄</span></div>
+  <div class="profile"><div class="profile-icon" aria-label="مدیر"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg></div><span>مدیر سیستم　⌄</span></div>
 </div>
 <main>
 <header class="heading">
