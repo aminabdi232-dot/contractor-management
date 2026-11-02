@@ -306,7 +306,6 @@ function applyTheme(theme){
  }
 `;
  document.head.append(style);
- try{localStorage.setItem("app-global-theme",green?"green":"blue");}catch{}
  document.documentElement.removeAttribute("data-theme-pending");
 }
 async function loadGlobalTheme(){
