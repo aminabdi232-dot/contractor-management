@@ -152,11 +152,8 @@ function addUserBar(profile) {
   if($("#app-sidebar")) return;
   const items=[
     ["panel.html","خانه","home"],
-    ["transactions.html","کمیسیون معاملات","briefcase"],
     ["projects.html","مدیریت پروژه‌ها","building"],
-    ["finance.html","امور مالی و پرداخت‌ها","wallet"],
-    ["payroll.html","حقوق و دستمزد","users"],
-    ["documents.html","مدیریت اسناد","file"],
+undefined    ["documents.html","مدیریت اسناد","file"],
     ["technical.html","فنی و مهندسی","settings"],
     ["services.html","سایر خدمات","grid"]
   ];
@@ -199,7 +196,6 @@ function addSubmenuLinks(module){
  document.querySelectorAll(".card").forEach(card=>{const h=card.querySelector("h2");if(!h||card.querySelector(".submenu-link"))return;const link=document.createElement("a");link.className="submenu-link";link.href="submodule.html?module="+encodeURIComponent(module)+"&title="+encodeURIComponent(h.textContent.trim());link.textContent="ورود به زیرمجموعه ←";link.style.cssText="display:inline-block;margin-top:12px;color:#5eead4;text-decoration:none;font-size:12px";card.append(link);});
 }
 function decoratePanel(){
- const modules=["transactions","projects","finance","payroll","documents","technical","services"];
  const artwork=[
   '<circle cx="48" cy="48" r="34" fill="url(#a)"/><path d="M25 48h46M48 25v46M34 34l28 28m0-28L34 62" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M76 20l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="#fef3c7"/>',
   '<path d="M18 68V35l30-17 30 17v33" fill="none" stroke="url(#a)" stroke-width="8" stroke-linejoin="round"/><path d="M28 68V43h40v25M42 68V52h12v16" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round"/><path d="M12 75h72" stroke="#a7f3d0" stroke-width="5" stroke-linecap="round"/>',
@@ -210,7 +206,6 @@ function decoratePanel(){
   '<path d="M48 13l8 20 21 1-16 13 6 21-19-12-19 12 6-21-16-13 21-1z" fill="url(#a)" stroke="#fff" stroke-width="3"/>'
  ];
  document.querySelectorAll(".tile").forEach((tile,i)=>{
-  tile.href=modules[i]+".html";
   const art=tile.querySelector(".art");
   if(art)art.innerHTML='<svg viewBox="0 0 96 96" role="img" aria-hidden="true"><defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a7f3d0"/><stop offset="1" stop-color="#059669"/></linearGradient></defs><circle cx="48" cy="48" r="43" fill="#ffffff0b" stroke="#6ee7b7" stroke-opacity=".35" stroke-width="1.5"/>'+artwork[i]+'</svg>';
  });
