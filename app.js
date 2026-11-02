@@ -89,15 +89,33 @@ async function loginPage() {
   });
 }
 async function protectPage() {
-  const {data:{session}}=await supabase.auth.getSession();
-  if(!session){location.replace("login.html");return false;}
+  const {data:{session},error:sessionError}=await supabase.auth.getSession();
+  if(sessionError || !session){location.replace("login.html");return false;}
+  let profile;
   try {
-    const profile=await profileFor(session.user);
+    profile=await profileFor(session.user);
+  } catch(e) {
+    console.error("Access validation failed:",e);
+    await supabase.auth.signOut();
+    location.replace("login.html?reason=access");
+    return false;
+  }
+  try {
     await loadGlobalTheme();
     addUserBar(profile);
-    if(path==="panel.html" && profile.is_admin){ setupUserManagement(); setupThemeSettings(); }
-    return true;
-  } catch(e){await supabase.auth.signOut();location.replace("login.html?reason=access");return false;}
+    if(path==="panel.html" && profile.is_admin){
+      setupUserManagement();
+      setupThemeSettings();
+    }
+  } catch(e) {
+    console.error("Page interface initialization failed:",e);
+    const notice=document.createElement("div");
+    notice.setAttribute("role","alert");
+    notice.textContent="بخشی از رابط سامانه بارگذاری نشد. صفحه را تازه‌سازی کنید.";
+    notice.style.cssText="margin:12px;padding:12px;border:1px solid #b45309;border-radius:10px;background:#451a03;color:#ffedd5;font:13px/2 Tahoma,sans-serif";
+    document.body.prepend(notice);
+  }
+  return true;
 }
 function setupUserManagement(){
   const main=$("main"); if(!main || $("#user-management")) return;
