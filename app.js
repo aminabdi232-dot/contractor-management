@@ -208,7 +208,7 @@ async function loadGlobalTheme(){
 function setupThemeSettings(){
  const main=$("main");if(!main||$("#theme-settings"))return;
  const section=document.createElement("section");section.id="theme-settings";
- section.style.cssText="display:none;margin:0 0 22px;padding:20px;border:1px solid var(--app-line);border-radius:16px;background:linear-gradient(145deg,#19283d,#101a2a);color:#f3f6fb";
+ section.style.cssText="display:block;margin:0 0 22px;padding:20px;border:1px solid var(--app-line);border-radius:16px;background:linear-gradient(145deg,#19283d,#101a2a);color:#f3f6fb";
  section.innerHTML=`
  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:23px">🎨</span><h2 style="margin:0;font-size:19px">تنظیمات ظاهر سامانه</h2></div>
  <p style="margin:0 0 14px;color:#a9b6c9;font-size:13px;line-height:2">انتخاب مدیر برای تمام کاربران و تمام دستگاه‌ها اعمال می‌شود.</p>
