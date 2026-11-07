@@ -80,6 +80,7 @@ async function loginPage() {
         throw error;
       }
       await profileFor(data.user);
+      try { sessionStorage.setItem("show-login-greeting", "1"); } catch {}
       location.replace("index.html");
     } catch(err) {
       await supabase.auth.signOut();
@@ -88,6 +89,29 @@ async function loginPage() {
     }
   });
 }
+function showLoginGreeting() {
+  let shouldShow=false;
+  try {
+    shouldShow=sessionStorage.getItem("show-login-greeting")==="1";
+    if(shouldShow) sessionStorage.removeItem("show-login-greeting");
+  } catch {}
+  if(!shouldShow) return;
+  const overlay=document.createElement("div");
+  overlay.setAttribute("role","status");
+  overlay.setAttribute("aria-live","polite");
+  overlay.style.cssText="position:fixed;inset:0;z-index:100000;display:grid;place-items:center;padding:24px;background:rgba(3,12,10,.88);backdrop-filter:blur(8px);opacity:0;transition:opacity .25s ease";
+  const card=document.createElement("div");
+  card.textContent="امین طاهونه‌چی، خیلی دیر کردی برای ورود!";
+  card.style.cssText="width:min(680px,100%);padding:34px 26px;border:1px solid #34d399;border-radius:22px;background:linear-gradient(145deg,#15372d,#102820);box-shadow:0 24px 80px #0008;color:#ecfdf5;text-align:center;font:800 clamp(21px,4vw,32px)/2 Vazirmatn,Tahoma,sans-serif";
+  overlay.append(card);
+  document.body.append(overlay);
+  requestAnimationFrame(()=>{overlay.style.opacity="1";});
+  setTimeout(()=>{
+    overlay.style.opacity="0";
+    setTimeout(()=>overlay.remove(),300);
+  },2600);
+}
+
 async function protectPage() {
   const {data:{session},error:sessionError}=await supabase.auth.getSession();
   if(sessionError || !session){location.replace("login.html");return false;}
@@ -100,6 +124,7 @@ async function protectPage() {
     location.replace("login.html?reason=access");
     return false;
   }
+  showLoginGreeting();
   try {
     await loadGlobalTheme();
     addUserBar(profile);
