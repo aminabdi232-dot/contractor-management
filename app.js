@@ -389,8 +389,12 @@ function setupModuleCatalog(module) {
   head.append(title,addProject);
   const hint=document.createElement("p");hint.textContent="پروژه‌ها و زیرمجموعه‌های دلخواهت را بدون محدودیت تعریف و مدیریت کن.";hint.style.cssText="font:13px/2 Vazirmatn,sans-serif;color:var(--app-muted,#a9b6c9);margin:10px 0 16px";
   const status=document.createElement("p");status.style.cssText="font:12px Vazirmatn,sans-serif;min-height:20px";
-  const tree=document.createElement("div");tree.style.cssText="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px";
-  section.append(head,hint,status,tree);main.insertBefore(section,main.children[1]||null);
+  const tree=module==="projects"?$("#project-list"):document.createElement("div");
+  if(!tree){say("محل نمایش پروژه‌ها پیدا نشد.",true);return;}
+  if(module!=="projects")tree.style.cssText="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px";
+  section.append(head,hint,status);
+  if(module!=="projects")section.append(tree);
+  main.insertBefore(section,module==="projects"?tree:main.children[1]||null);
   const say=(t,bad=false)=>{status.textContent=t;status.style.color=bad?"#fca5a5":"#5eead4";};
   const btnStyle="background:#26364b;color:#e8d7b5;border:1px solid #806c48;border-radius:9px;padding:8px 12px;font:12px Vazirmatn,sans-serif;cursor:pointer";
   let modal=null, currentNodes=[];
@@ -436,7 +440,7 @@ function setupModuleCatalog(module) {
     const wrap=document.createElement("article");
     wrap.style.cssText=isRoot
       ?"display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:12px;min-height:178px;padding:18px 13px;border:1px solid var(--app-line,#35445a);border-radius:16px;background:linear-gradient(145deg,var(--app-panel,#19283d),#0b1422);text-align:center;box-shadow:0 8px 22px #0002"
-      :"margin-top:10px;padding:12px;border:1px solid #35445a;border-radius:12px;background:#0b1422";
+      :"display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px;border:1px solid #35445a;border-radius:12px;background:#0b1422";
     const icon=document.createElement("div");icon.textContent=isRoot?"▣":"▤";icon.style.cssText=isRoot?"display:grid;place-items:center;width:58px;height:58px;border-radius:16px;background:#1b6650;color:#d1fae5;border:1px solid #3b9b78;font-size:29px":"display:none";
     const name=document.createElement("strong");name.textContent=node.name;name.style.cssText="font:700 "+(isRoot?"15px":"13px")+" Vazirmatn,sans-serif;color:var(--app-text,#f3f6fb);overflow-wrap:anywhere";
     const controls=document.createElement("div");controls.style.cssText="display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;width:100%";
@@ -444,7 +448,7 @@ function setupModuleCatalog(module) {
     const del=document.createElement("button");del.type="button";del.textContent="حذف";del.style.cssText=btnStyle+";background:#4a2028;color:#fecaca;border-color:#8b3b46";del.onclick=()=>removeNode(node);
     controls.append(add,del);wrap.append(icon,name,controls);
     if(node.children?.length){
-      const children=document.createElement("div");children.style.cssText="display:grid;gap:8px;width:100%;margin-top:4px";
+      const children=document.createElement("div");children.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px;width:100%;margin-top:4px";
       node.children.forEach(child=>children.append(renderNode(child,depth+1)));wrap.append(children);
     }
     return wrap;
