@@ -392,9 +392,8 @@ function setupModuleCatalog(module) {
   const tree=module==="projects"?$("#project-list"):document.createElement("div");
   if(!tree){say("محل نمایش پروژه‌ها پیدا نشد.",true);return;}
   if(module!=="projects")tree.style.cssText="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px";
-  section.append(head,hint,status);
-  if(module!=="projects")section.append(tree);
-  main.insertBefore(section,module==="projects"?tree:main.children[1]||null);
+  section.append(head,hint,status,tree);
+  main.insertBefore(section,main.children[1]||null);
   const say=(t,bad=false)=>{status.textContent=t;status.style.color=bad?"#fca5a5":"#5eead4";};
   const btnStyle="background:#26364b;color:#e8d7b5;border:1px solid #806c48;border-radius:9px;padding:8px 12px;font:12px Vazirmatn,sans-serif;cursor:pointer";
   let modal=null, currentNodes=[];
