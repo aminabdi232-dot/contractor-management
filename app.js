@@ -274,9 +274,14 @@ function decoratePanel(){
   '<circle cx="48" cy="46" r="28" fill="none" stroke="url(#a)" stroke-width="10"/><circle cx="48" cy="46" r="10" fill="#fff"/><path d="M68 66l15 15" stroke="#a7f3d0" stroke-width="8" stroke-linecap="round"/>',
   '<path d="M48 13l8 20 21 1-16 13 6 21-19-12-19 12 6-21-16-13 21-1z" fill="url(#a)" stroke="#fff" stroke-width="3"/>'
  ];
+ const blueTheme=document.documentElement.dataset.theme==="blue";
+ const iconArtwork=blueTheme?artwork.map(svg=>svg.replaceAll("#fff","#172943").replaceAll("#a7f3d0","#d9b96f").replaceAll("#fef3c7","#f2d99e")):artwork;
+ const gradientStart=blueTheme?"#f0d99e":"#a7f3d0";
+ const gradientEnd=blueTheme?"#a77d36":"#059669";
+ const ringColor=blueTheme?"#d9b96f":"#6ee7b7";
  document.querySelectorAll(".tile").forEach((tile,i)=>{
   const art=tile.querySelector(".art");
-  if(art)art.innerHTML='<svg viewBox="0 0 96 96" role="img" aria-hidden="true"><defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a7f3d0"/><stop offset="1" stop-color="#059669"/></linearGradient></defs><circle cx="48" cy="48" r="43" fill="#ffffff0b" stroke="#6ee7b7" stroke-opacity=".35" stroke-width="1.5"/>'+artwork[i]+'</svg>';
+  if(art)art.innerHTML='<svg viewBox="0 0 96 96" role="img" aria-hidden="true"><defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+gradientStart+'"/><stop offset="1" stop-color="'+gradientEnd+'"/></linearGradient></defs><circle cx="48" cy="48" r="43" fill="#ffffff0b" stroke="'+ringColor+'" stroke-opacity=".5" stroke-width="1.5"/>'+iconArtwork[i]+'</svg>';
  });
  document.querySelectorAll(".tile h2").forEach(h=>{h.style.fontSize="20px";h.style.fontWeight="900";});
 }
