@@ -6,7 +6,31 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const path = location.pathname.split("/").pop() || "index.html";
 const query = new URLSearchParams(location.search);
 const moduleMap = {"projects.html":"projects","finance.html":"finance","payroll.html":"payroll","technical.html":"technical","documents.html":"documents","services.html":"services"};
+
 const $ = (s, root=document) => root.querySelector(s);
+
+// مقیاس یکپارچه فونت‌ها: همه صفحات ۲ پیکسل بزرگ‌تر، صفحه کمیسیون معاملات ۲ پیکسل کوچک‌تر
+function applyGlobalFontScale() {
+  const delta = path === "transactions.html" ? -2 : 2;
+  const scale = root => {
+    if (!(root instanceof Element)) return;
+    const nodes = [root, ...root.querySelectorAll("*")];
+    for (const el of nodes) {
+      if (el.dataset.fontScaleApplied === "1" || /^(SCRIPT|STYLE|SVG|PATH|USE|META|LINK)$/i.test(el.tagName)) continue;
+      const size = Number.parseFloat(getComputedStyle(el).fontSize);
+      if (!Number.isFinite(size) || size <= 0) continue;
+      el.style.setProperty("font-size", Math.max(9, size + delta) + "px", "important");
+      el.dataset.fontScaleApplied = "1";
+    }
+  };
+  scale(document.body);
+  const observer = new MutationObserver(records => {
+    for (const record of records) for (const node of record.addedNodes) scale(node);
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+if (document.body) applyGlobalFontScale();
+
 
 function message(el, text, bad=false) {
   if (!el) return;
