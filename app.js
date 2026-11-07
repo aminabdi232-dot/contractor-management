@@ -20,7 +20,8 @@ function applyGlobalFontScale() {
       .map(el => [el, Number.parseFloat(getComputedStyle(el).fontSize)]);
     for (const [el, size] of measured) {
       if (!Number.isFinite(size) || size <= 0) continue;
-      el.style.setProperty("font-size", Math.max(9, size + delta) + "px", "important");
+      const sidebarBoost = el.closest("#app-sidebar") ? 3 : 0;
+      el.style.setProperty("font-size", Math.max(9, size + delta + sidebarBoost) + "px", "important");
       el.dataset.fontScaleApplied = "1";
     }
   };
