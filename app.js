@@ -379,6 +379,44 @@ async function setupSubmodule(){
  $("#record-save").onclick=async()=>{const titleValue=$("#record-title").value.trim();if(!titleValue){message(status,"عنوان را وارد کنید.",true);return;}const raw=$("#record-amount").value.trim();const amount=Number(raw.replace(/[٬,\\s]/g,""))||0;const {error}=await supabase.from("module_records").insert({module:moduleName,title:titleValue,project_name:$("#record-project").value.trim()||projectName||null,reference_no:$("#record-ref").value.trim()||null,amount,status:$("#record-status").value,responsible:$("#record-owner").value.trim()||null,details:{submodule:title,scope,description:$("#record-details").value}});if(error){message(status,error.message,true);return;}message(status,"اطلاعات ذخیره شد.");["record-title","record-ref","record-amount","record-owner","record-details"].forEach(id=>$("#"+id).value="");$("#record-project").value=projectName;await load();};await load();
 }
 
+async function setupGlobalProjectPicker(module) {
+  const main=$("main"); if(!main || $("#global-project-picker")) return;
+  const section=document.createElement("section");section.id="global-project-picker";
+  section.style.cssText="margin:22px 0;padding:20px;border:1px solid var(--app-line,#23765c);border-radius:16px;background:var(--app-panel,#102820)";
+  const heading=document.createElement("h2");heading.textContent="پروژه‌های تعریف‌شده";heading.style.cssText="margin:0 0 8px;font-size:18px;color:var(--app-text,#f3f6fb)";
+  const hint=document.createElement("p");hint.textContent="فهرست زیر از مدیریت پروژه‌ها خوانده می‌شود؛ هر پروژه‌ای که آنجا تعریف شود، در این بخش و سایر واحدها نیز نمایش داده خواهد شد.";hint.style.cssText="margin:0 0 14px;color:var(--app-muted,#a7c7b9);font-size:12px;line-height:2";
+  const list=document.createElement("div");list.style.cssText="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px";
+  const status=document.createElement("p");status.style.cssText="font-size:12px;color:var(--app-muted,#a7c7b9)";
+  section.append(heading,hint,list,status);
+  const target=module==="technical"?$(".projects",main):($(".grid",main)||$(".panel",main));
+  if(module==="technical" && target){target.replaceWith(section);}
+  else if(target){main.insertBefore(section,target);}
+  else main.append(section);
+  const {data,error}=await supabase.from("module_catalog").select("id,name").eq("module","projects").eq("node_type","project").is("parent_id",null).order("sort_order").order("created_at");
+  if(error){status.textContent="دریافت فهرست پروژه‌ها ناموفق بود: "+error.message;return;}
+  if(!data?.length){status.textContent="هنوز پروژه‌ای تعریف نشده است. ابتدا از بخش مدیریت پروژه‌ها پروژه جدید بسازید.";return;}
+  data.forEach((project,index)=>{
+    const link=document.createElement("a");
+    const params=new URLSearchParams({project:project.name});
+    link.href=module==="technical"?"technical-project.html?"+params.toString():"submodule.html?"+new URLSearchParams({module,title:"پرونده پروژه",project}).toString();
+    link.style.cssText="display:block;padding:16px;border:1px solid var(--app-line,#23765c);border-radius:12px;background:linear-gradient(145deg,var(--app-panel-2,#15372d),#0b211a);color:var(--app-text,#f3f6fb);text-decoration:none";
+    const number=document.createElement("small");number.textContent="پروژه "+String(index+1).padStart(2,"0");number.style.cssText="display:block;color:var(--app-accent,#34d399);margin-bottom:7px";
+    const name=document.createElement("strong");name.textContent=project.name;name.style.cssText="font-size:14px";
+    const action=document.createElement("div");action.textContent="ورود به پرونده ←";action.style.cssText="font-size:11px;color:var(--app-muted,#a7c7b9);margin-top:10px";
+    link.append(number,name,action);list.append(link);
+  });
+  status.textContent=data.length+" پروژه از فهرست مرکزی نمایش داده شد.";
+}
+async function populateProjectSelect(select) {
+  if(!select || select.dataset.projectsLoaded==="1") return;
+  const {data,error}=await supabase.from("module_catalog").select("name").eq("module","projects").eq("node_type","project").is("parent_id",null).order("sort_order").order("created_at");
+  if(error)return;
+  const current=select.value;
+  const blank=document.createElement("option");blank.value="";blank.textContent="انتخاب پروژه";select.replaceChildren(blank);
+  (data||[]).forEach(p=>{const option=document.createElement("option");option.value=p.name;option.textContent=p.name;select.append(option);});
+  if(current && [...select.options].some(o=>o.value===current))select.value=current;
+  select.dataset.projectsLoaded="1";
+}
 function setupModuleCatalog(module) {
   const main=$("main"); if(!main || $("#module-catalog")) return;
   const section=document.createElement("section");section.id="module-catalog";
@@ -525,6 +563,6 @@ function setupDataForm(module) {
   if(path==="submodule.html"){await setupSubmodule();return;}
 
   if(path==="panel.html") decoratePanel();
-  if(moduleMap[path]){setupModuleCatalog(moduleMap[path]);addSubmenuLinks(moduleMap[path]);setupDataForm(moduleMap[path]);}
-  if(path==="transactions.html"){setupModuleCatalog("transactions");addSubmenuLinks("transactions");}
+  if(moduleMap[path]){if(moduleMap[path]==="projects")setupModuleCatalog("projects");else setupGlobalProjectPicker(moduleMap[path]);addSubmenuLinks(moduleMap[path]);setupDataForm(moduleMap[path]);}
+  if(path==="transactions.html"){setupGlobalProjectPicker("transactions");addSubmenuLinks("transactions");}
 })();
