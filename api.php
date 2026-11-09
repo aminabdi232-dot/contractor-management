@@ -26,7 +26,7 @@ function db(): PDO {
  return $pdo;
 }
 function body(): array { $v=json_decode(file_get_contents('php://input') ?: '{}',true); return is_array($v)?$v:[]; }
-function uuidv4(): string { $b=random_bytes(16); $b[6]=chr((ord($b[6])&0x0f)|0x40); $b[8]=chr((ord($b[8])&0x3f)|0x80); return vsprintf('%s%s-%s-%s-%s-%s%s%s',[bin2hex(substr($b,0,4)),bin2hex(substr($b,4,2)),bin2hex(substr($b,6,2)),bin2hex(substr($b,8,2)),bin2hex(substr($b,10,6))]); }
+function uuidv4(): string { $b=random_bytes(16); $b[6]=chr((ord($b[6])&0x0f)|0x40); $b[8]=chr((ord($b[8])&0x3f)|0x80); return sprintf('%s-%s-%s-%s-%s',bin2hex(substr($b,0,4)),bin2hex(substr($b,4,2)),bin2hex(substr($b,6,2)),bin2hex(substr($b,8,2)),bin2hex(substr($b,10,6))); }
 function csrf_check(): void { $sent=$_SERVER['HTTP_X_CSRF_TOKEN']??''; if(!isset($_SESSION['csrf'])||!is_string($sent)||!hash_equals($_SESSION['csrf'],$sent))out(['error'=>'اعتبار درخواست منقضی شده است. صفحه را تازه‌سازی کنید.'],419); }
 function current_user(): array {
  if(empty($_SESSION['uid']))out(['error'=>'برای ادامه وارد سامانه شوید.'],401);
