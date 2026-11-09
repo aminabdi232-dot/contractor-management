@@ -1,8 +1,51 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.0";
-
-const SUPABASE_URL = "https://oqolkqwnsivoqnegagdv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_-F4sy_LmvOXS8LFywNnNMQ_akJ91gic";
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+// ارتباط مستقل از Supabase؛ نشست PHP و API امن روی هاست پارس‌پک
+let csrfToken = "";
+async function apiRequest(payload, authAction=false) {
+ const headers={"Content-Type":"application/json"};
+ if(csrfToken && !authAction) headers["X-CSRF-Token"]=csrfToken;
+ try {
+  const response=await fetch("api.php",{method:"POST",credentials:"same-origin",headers,body:JSON.stringify(payload)});
+  const result=await response.json();
+  if(result.csrf) csrfToken=result.csrf;
+  if(!response.ok) return {data:null,error:{message:result.error||"درخواست ناموفق بود."}};
+  return {data:result,error:null};
+ } catch(e) { return {data:null,error:{message:"ارتباط با سرور برقرار نشد."}}; }
+}
+class LocalQuery {
+ constructor(table){this.table=table;this.method="select";this.columns="*";this.filters=[];this.orders=[];this.max=100;this.values=null;this.inFilter=null;}
+ select(columns="*"){this.columns=columns;return this;}
+ eq(column,value){this.filters.push({column,op:"eq",value});return this;}
+ is(column,value){this.filters.push({column,op:"is",value});return this;}
+ order(column,options={}){this.orders.push({column,ascending:options.ascending!==false});return this;}
+ limit(value){this.max=value;return this;}
+ insert(values){this.method="insert";this.values=values;return this;}
+ delete(){this.method="delete";return this;}
+ in(column,values){this.inFilter={column,values};return this;}
+ upsert(values){this.method="upsert";this.values=values;return this;}
+ async execute(){
+  const payload={action:"query",table:this.table,method:this.method,columns:this.columns,filters:this.filters,orders:this.orders,limit:this.max,values:this.values};
+  if(this.inFilter)payload.in=this.inFilter.values;
+  return apiRequest(payload);
+ }
+ then(resolve,reject){return this.execute().then(resolve,reject);}
+ single(){return this.execute().then(r=>({data:r.data?.data?.[0]??null,error:r.error||(r.data?.data?.length===1?null:{message:"رکورد یکتا پیدا نشد."})}));}
+ maybeSingle(){return this.execute().then(r=>({data:r.data?.data?.[0]??null,error:r.error||(r.data?.data?.length>1?{message:"بیش از یک رکورد پیدا شد."}:null)}));}
+}
+const supabase={
+ from(table){return new LocalQuery(table);},
+ auth:{
+  async getSession(){const r=await apiRequest({action:"session"},true);return {data:{session:r.data?.session??null},error:r.error};},
+  async getUser(){const r=await apiRequest({action:"session"},true);return {data:{user:r.data?.session?.user??null},error:r.error};},
+  async signInWithPassword(credentials){const identifier=credentials.email||credentials.phone||"";const r=await apiRequest({action:"login",identifier,password:credentials.password},true);if(r.data?.csrf)csrfToken=r.data.csrf;return {data:{user:r.data?.user??null},error:r.error};},
+  async signOut(){const r=await apiRequest({action:"logout"});return {error:r.error};},
+  onAuthStateChange(){return {data:{subscription:{unsubscribe(){}}}};},
+  async resetPasswordForEmail(){return {error:{message:"بازیابی خودکار ایمیل هنوز پیکربندی نشده است. برای تعیین رمز جدید با مدیر سامانه تماس بگیرید."}};},
+  async updateUser(){return {error:{message:"تغییر رمز از این مسیر فعال نیست. با مدیر سامانه تماس بگیرید."}};}
+ },
+ functions:{
+  async invoke(name,options={}){if(name!=="admin-create-user")return {data:null,error:{message:"عملیات ناشناخته است."}};const r=await apiRequest({action:"create_user",...(options.body||{})});return {data:r.data,error:r.error};}
+ }
+};
 const path = location.pathname.split("/").pop() || "index.html";
 const query = new URLSearchParams(location.search);
 const moduleMap = {"projects.html":"projects","finance.html":"finance","payroll.html":"payroll","technical.html":"technical","documents.html":"documents","services.html":"services"};
