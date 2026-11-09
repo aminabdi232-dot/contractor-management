@@ -52,10 +52,10 @@ try {
  if($action==='create_user'){
   csrf_check();$admin=current_user();if(!(int)$admin['is_admin'])out(['error'=>'این عملیات فقط برای مدیر سامانه مجاز است.'],403);
   $name=trim((string)($input['full_name']??''));$phone=trim((string)($input['phone']??''));$job=trim((string)($input['job_title']??''));$pass=(string)($input['password']??'');
-  if($name===''||$phone===''||strlen($pass)<10)out(['error'=>'نام، شماره همراه و رمز حداقل ۱۰ نویسه‌ای الزامی است.'],422);
+  if($name===''||$phone===''||strlen($pass)<8)out(['error'=>'نام، شماره همراه و رمز حداقل ۸ نویسه‌ای الزامی است.'],422);
   $normalized=preg_replace('/[\s()-]/','',$phone);
   if(preg_match('/^09\d{9}$/',$normalized))$normalized='+98'.substr($normalized,1);elseif(preg_match('/^9\d{9}$/',$normalized))$normalized='+98'.$normalized;
-  $id=uuidv4();$s=db()->prepare('INSERT INTO app_profiles (id,username,phone,password_hash,full_name,job_title,is_admin,is_active) VALUES (?,?,?,?,?,?,0,1)');
+  $id=uuidv4();$s=db()->prepare('INSERT INTO app_profiles (id,username,phone,password_hash,full_name,job_title,is_admin,is_active,created_at,updated_at) VALUES (?,?,?,?,?,?,0,1,NOW(),NOW())');
   $s->execute([$id,$normalized,$normalized,password_hash($pass,PASSWORD_DEFAULT),$name,$job?:null]);out(['success'=>true,'user'=>['id'=>$id,'phone'=>$normalized]]);
  }
  if($action!=='query')out(['error'=>'عملیات ناشناخته است.'],400);
@@ -91,7 +91,7 @@ try {
  if($method==='insert'){
   if(!in_array($table,['module_catalog','module_records'],true))out(['error'=>'ثبت در این جدول از این مسیر مجاز نیست.'],403);
   $rows=$input['values']??[];if(!is_array($rows))out(['error'=>'داده نامعتبر است.'],422);if(!array_is_list($rows))$rows=[$rows];$created=[];
-  foreach($rows as $row){if(!is_array($row))continue;$allowed=$table==='module_catalog'?['id','module','parent_id','node_type','name','sort_order','created_by']:['id','module','title','project_name','reference_no','amount','status','responsible','details','created_by'];$data=array_intersect_key($row,array_flip($allowed));if(!isset($data['id']))$data['id']=uuidv4();if($table==='module_records'){$data['details']=json_encode($data['details']??[],JSON_UNESCAPED_UNICODE);$data['created_by']=$user['id'];}
+  foreach($rows as $row){if(!is_array($row))continue;$allowed=$table==='module_catalog'?['id','module','parent_id','node_type','name','sort_order','created_by']:['id','module','title','project_name','reference_no','amount','status','responsible','details','created_by'];$data=array_intersect_key($row,array_flip($allowed));if(!isset($data['id']))$data['id']=uuidv4();if($table==='module_records'){$data['details']=json_encode($data['details']??[],JSON_UNESCAPED_UNICODE);$data['created_by']=$user['id'];$data['created_at']=date('Y-m-d H:i:s');$data['updated_at']=date('Y-m-d H:i:s');}else{$data['created_at']=date('Y-m-d H:i:s');}
    $fields=array_keys($data);$sql='INSERT INTO '.$table.' ('.implode(',',$fields).') VALUES ('.implode(',',array_fill(0,count($fields),'?')).')';$q=db()->prepare($sql);$q->execute(array_values($data));$created[]=$data;
   }out(['data'=>$created]);
  }
@@ -100,7 +100,7 @@ try {
  }
  if($method==='upsert'){
   if($table!=='app_settings')out(['error'=>'عملیات upsert برای این جدول مجاز نیست.'],403);$d=$input['values']??[];$key=(string)($d['setting_key']??'');if($key==='')out(['error'=>'کلید تنظیمات الزامی است.'],422);$val=json_encode($d['setting_value']??new stdClass(),JSON_UNESCAPED_UNICODE);
-  $q=db()->prepare('INSERT INTO app_settings (setting_key,setting_value,updated_by) VALUES (?,?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value),updated_by=VALUES(updated_by),updated_at=CURRENT_TIMESTAMP');$q->execute([$key,$val,$user['id']]);out(['data'=>[['setting_key'=>$key,'setting_value'=>json_decode($val,true)]]]);
+  $q=db()->prepare('INSERT INTO app_settings (setting_key,setting_value,updated_by,updated_at) VALUES (?,?,?,NOW()) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value),updated_by=VALUES(updated_by),updated_at=NOW()');$q->execute([$key,$val,$user['id']]);out(['data'=>[['setting_key'=>$key,'setting_value'=>json_decode($val,true)]]]);
  }
  out(['error'=>'عملیات نامعتبر است.'],400);
 } catch(Throwable $e){error_log('Engcore API error: '.$e->getMessage());out(['error'=>'خطای داخلی سرور رخ داد.'],500);}
