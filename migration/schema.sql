@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS app_profiles (
  created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
  updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
  INDEX idx_profiles_active (is_active)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS company_projects (
  id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS company_projects (
  notes TEXT NULL,
  created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
  updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS module_catalog (
  id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS module_catalog (
  CONSTRAINT fk_catalog_parent FOREIGN KEY (parent_id) REFERENCES module_catalog(id) ON DELETE CASCADE,
  CONSTRAINT fk_catalog_creator FOREIGN KEY (created_by) REFERENCES app_profiles(id) ON DELETE SET NULL,
  INDEX idx_catalog_module_parent (module,parent_id,sort_order)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS company_employees (
  id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS company_employees (
  updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
  CONSTRAINT fk_employees_project FOREIGN KEY (project_id) REFERENCES company_projects(id) ON DELETE SET NULL,
  INDEX idx_employees_name (full_name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS payroll_entries (
  id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS payroll_entries (
  CONSTRAINT fk_payroll_employee FOREIGN KEY (employee_id) REFERENCES company_employees(id) ON DELETE CASCADE,
  CONSTRAINT fk_payroll_project FOREIGN KEY (project_id) REFERENCES company_projects(id) ON DELETE SET NULL,
  INDEX idx_payroll_period (period_year,period_month)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS financial_entries (
  id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS financial_entries (
  CONSTRAINT fk_financial_project FOREIGN KEY (project_id) REFERENCES company_projects(id) ON DELETE SET NULL,
  CONSTRAINT fk_financial_creator FOREIGN KEY (created_by) REFERENCES app_profiles(id) ON DELETE SET NULL,
  INDEX idx_financial_date (entry_date)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS module_records (
  id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS module_records (
  CONSTRAINT fk_records_creator FOREIGN KEY (created_by) REFERENCES app_profiles(id) ON DELETE SET NULL,
  INDEX idx_records_module_created (module,created_at),
  INDEX idx_records_project (project_name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS app_settings (
  setting_key VARCHAR(120) PRIMARY KEY,
@@ -117,4 +117,4 @@ CREATE TABLE IF NOT EXISTS app_settings (
  updated_by CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NULL,
  updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
  CONSTRAINT fk_settings_updater FOREIGN KEY (updated_by) REFERENCES app_profiles(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
