@@ -1,0 +1,8 @@
+Options -Indexes
+DirectoryIndex login.html
+<FilesMatch "^(install\.php)$">
+ Require all granted
+</FilesMatch>
+<FilesMatch "^(.*\.sql|.*\.lock|engcore-config\.php)$">
+ Require all denied
+</FilesMatch>
