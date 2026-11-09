@@ -10,7 +10,9 @@ if (is_file($privateConfig) || is_file($lockFile)) {
 }
 $error = '';
 $success = false;
+if (empty($_SESSION['install_csrf'])) $_SESSION['install_csrf'] = bin2hex(random_bytes(32));
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+ if (!hash_equals($_SESSION['install_csrf'] ?? '', (string)($_POST['install_csrf'] ?? ''))) { http_response_code(419); exit('درخواست نامعتبر است. صفحه را تازه‌سازی کنید.'); }
  $dbName = 'engcor_first';
  $dbUser = 'engcor_amin';
  $dbPass = (string)($_POST['db_password'] ?? '');
@@ -72,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php if($success): ?><div class="success">ساختار دیتابیس و اطلاعات اولیه منتقل شد. حساب مدیر و حساب کاربر دوم آماده‌اند. اکنون فایل install.php را از هاست حذف کنید و سپس وارد <a style="color:#a7f3d0" href="login.html">صفحه ورود</a> شوید.</div>
 <?php else: ?><p>اطلاعات اتصال دیتابیس هاست و دو رمز جدید را وارد کنید. این اطلاعات در همین صفحه امن دریافت و فایل تنظیمات خارج از پوشه عمومی سایت ذخیره می‌شود. رمزها در GitHub یا چت ثبت نمی‌شوند.</p>
 <?php if($error): ?><div class="error"><?= $error ?></div><?php endif; ?>
-<form method="post" autocomplete="off">
+<form method="post" autocomplete="off"><input type="hidden" name="install_csrf" value="<?= $_SESSION['install_csrf'] ?>">
 <label>رمز دیتابیس MySQL (engcor_amin)</label><input type="password" name="db_password" required autocomplete="new-password">
 <label>رمز جدید مدیر سامانه (aminabdi232@gmail.com)</label><input type="password" name="admin_password" required minlength="10" autocomplete="new-password">
 <label>رمز جدید کاربر دوم (+989399929110)</label><input type="password" name="second_password" required minlength="10" autocomplete="new-password">
