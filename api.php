@@ -84,7 +84,7 @@ try {
    elseif($op==='eq'){$sql.=' AND '.$col.'=?';$params[]=$val;}else out(['error'=>'نوع فیلتر نامعتبر است.'],400);
   }
   foreach(($input['orders']??[]) as $o){$col=(string)($o['column']??'');if(!in_array($col,$columns[$table],true))out(['error'=>'مرتب‌سازی نامعتبر است.'],400);$sql.=' ORDER BY '.$col.' '.(!empty($o['ascending'])?'ASC':'DESC');}
-  if(empty($input['orders']))$sql.=' ORDER BY created_at DESC';$limit=max(1,min(500,(int)($input['limit']??100)));$sql.=' LIMIT '.$limit;
+  if(empty($input['orders']) && $table!=='app_settings')$sql.=' ORDER BY created_at DESC';$limit=max(1,min(500,(int)($input['limit']??100)));$sql.=' LIMIT '.$limit;
   $q=db()->prepare($sql);$q->execute($params);$rows=$q->fetchAll();foreach($rows as &$row)foreach(['setting_value','details'] as $j)if(isset($row[$j])&&is_string($row[$j]))$row[$j]=json_decode($row[$j],true);out(['data'=>$rows]);
  }
  if(!$isAdmin)out(['error'=>'فقط مدیر سامانه مجاز به تغییر اطلاعات است.'],403);
