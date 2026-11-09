@@ -77,6 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <form method="post" autocomplete="off"><input type="hidden" name="install_csrf" value="<?= $_SESSION['install_csrf'] ?>">
 <label>رمز دیتابیس MySQL (engcor_amin)</label><input type="password" name="db_password" required autocomplete="new-password">
 <label>رمز جدید مدیر سامانه (aminabdi232@gmail.com)</label><input type="password" name="admin_password" required minlength="8" autocomplete="new-password">
-<label>رمز جدید کاربر دوم (+989399929110)</label><input type="password" name="second_password" required minlength="10" autocomplete="new-password">
+<label>رمز جدید کاربر دوم (+989399929110)</label><input type="password" name="second_password" required minlength="8" autocomplete="new-password">
 <p class="note">برای هر حساب رمز متفاوت و قوی انتخاب کنید. رمزها پس از هش شدن ذخیره می‌شوند.</p>
 <button type="submit">ایجاد دیتابیس و انتقال اطلاعات</button></form><?php endif; ?></main></body></html>
