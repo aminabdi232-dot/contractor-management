@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
    $schemaPath = __DIR__ . '/migration/schema.sql';
    if (!is_file($schemaPath)) throw new RuntimeException('فایل ساختار دیتابیس پیدا نشد.');
    $sql = file_get_contents($schemaPath);
-   foreach (preg_split('/;\\s*(?:\\r?\\n|$)/', $sql) as $statement) {
+   foreach (preg_split('/;\s*(?:\r?\n|$)/', $sql) as $statement) {
     if (trim($statement) !== '') $pdo->exec($statement);
    }
    $users = [
