@@ -34,27 +34,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (trim($statement) !== '') $pdo->exec($statement);
    }
    $users = [
-    ['7aa7a31e-0ed2-4c12-911c-c647393d08e0','aminabdi232@gmail.com','aminabdi232@gmail.com',null,password_hash($adminPass,PASSWORD_DEFAULT),'امین عبدی','مدیر سامانه',1,1],
-    ['9c18f221-0632-460e-ae2f-b1356f0dce61','+989399929110',null,'+989399929110',password_hash($secondPass,PASSWORD_DEFAULT),'امین طاهونه چی','رفیق صمیمی',1,1]
+    ['7aa7a31e-0ed2-4c12-911c-c647393d08e0','aminabdi232@gmail.com','aminabdi232@gmail.com',null,password_hash($adminPass,PASSWORD_DEFAULT),'امین عبدی','مدیر سامانه',1,1,'2026-10-25 11:25:38.084728','2026-10-25 11:25:38.084728'],
+    ['9c18f221-0632-460e-ae2f-b1356f0dce61','+989399929110',null,'+989399929110',password_hash($secondPass,PASSWORD_DEFAULT),'امین طاهونه چی','رفیق صمیمی',1,1,'2026-11-01 10:58:23.572001','2026-11-07 16:48:36.740686']
    ];
-   $stmt = $pdo->prepare('INSERT IGNORE INTO app_profiles (id,username,email,phone,password_hash,full_name,job_title,is_admin,is_active) VALUES (?,?,?,?,?,?,?,?,?)');
+   $stmt = $pdo->prepare('INSERT IGNORE INTO app_profiles (id,username,email,phone,password_hash,full_name,job_title,is_admin,is_active,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)');
    foreach ($users as $u) $stmt->execute($u);
 
-   $pdo->prepare("INSERT IGNORE INTO company_projects (id,code,name,client_name,contract_amount,status,start_date,end_date,notes) VALUES (?,?,?,?,?,?,?,?,?)")
-    ->execute(['934ede5a-4986-4650-bf42-06157f4f3174','2250','الغدیر','مسکن غدیر','100000.00','active','2026-10-06','2027-06-25',null]);
-   $pdo->prepare("INSERT IGNORE INTO company_employees (id,employee_no,full_name,phone,job_title,project_id,employment_status,hire_date) VALUES (?,?,?,?,?,?,?,?)")
-    ->execute(['e1dee264-0cba-4efe-a973-651fddf12ccd','2235','امین عبدی','09122713659','مدیر مهندسی','934ede5a-4986-4650-bf42-06157f4f3174','active','2026-10-01']);
-   $pdo->prepare("INSERT IGNORE INTO payroll_entries (id,employee_id,project_id,period_year,period_month,base_amount,overtime_amount,bonuses,deductions,status,notes) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
-    ->execute(['1de84f30-ffb2-45d7-a58d-6350f124fd6c','e1dee264-0cba-4efe-a973-651fddf12ccd','934ede5a-4986-4650-bf42-06157f4f3174',1405,1,'50000000.00','0.00','0.00','0.00','draft',null]);
+   $pdo->prepare("INSERT IGNORE INTO company_projects (id,code,name,client_name,contract_amount,status,start_date,end_date,notes,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
+    ->execute(['934ede5a-4986-4650-bf42-06157f4f3174','2250','الغدیر','مسکن غدیر','100000.00','active','2026-10-06','2027-06-25',null,'2026-10-25 11:32:33.240591','2026-10-25 11:32:33.240591']);
+   $pdo->prepare("INSERT IGNORE INTO company_employees (id,employee_no,full_name,phone,job_title,project_id,employment_status,hire_date,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)")
+    ->execute(['e1dee264-0cba-4efe-a973-651fddf12ccd','2235','امین عبدی','09122713659','مدیر مهندسی','934ede5a-4986-4650-bf42-06157f4f3174','active','2026-10-01','2026-10-25 11:33:08.672229','2026-10-25 11:33:08.672229']);
+   $pdo->prepare("INSERT IGNORE INTO payroll_entries (id,employee_id,project_id,period_year,period_month,base_amount,overtime_amount,bonuses,deductions,status,notes,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)")
+    ->execute(['1de84f30-ffb2-45d7-a58d-6350f124fd6c','e1dee264-0cba-4efe-a973-651fddf12ccd','934ede5a-4986-4650-bf42-06157f4f3174',1405,1,'50000000.00','0.00','0.00','0.00','draft',null,'2026-10-25 11:33:23.330134','2026-10-25 11:33:23.330134']);
    $catalog = [
-    ['430cc1b0-a262-40da-9e02-4d89e9a469f9','projects',null,'project','پروژه محمدیه قزوین',1],
-    ['7b3c425e-b17a-4a60-9804-002abb6118b1','projects',null,'project','پروژه الغدیر یافت‌آباد',2],
-    ['74f0345a-4450-4312-b872-3e4b66018bb0','projects',null,'project','پروژه حوض سلطان',3]
+    ['430cc1b0-a262-40da-9e02-4d89e9a469f9','projects',null,'project','پروژه محمدیه قزوین',1,'2026-11-07 16:52:56.688562'],
+    ['7b3c425e-b17a-4a60-9804-002abb6118b1','projects',null,'project','پروژه الغدیر یافت‌آباد',2,'2026-11-07 16:52:56.688562'],
+    ['74f0345a-4450-4312-b872-3e4b66018bb0','projects',null,'project','پروژه حوض سلطان',3,'2026-11-07 16:52:56.688562']
    ];
-   $catStmt=$pdo->prepare('INSERT IGNORE INTO module_catalog (id,module,parent_id,node_type,name,sort_order) VALUES (?,?,?,?,?,?)');
+   $catStmt=$pdo->prepare('INSERT IGNORE INTO module_catalog (id,module,parent_id,node_type,name,sort_order,created_at) VALUES (?,?,?,?,?,?,?)');
    foreach($catalog as $item)$catStmt->execute($item);
-   $pdo->prepare("INSERT IGNORE INTO app_settings (setting_key,setting_value,updated_by) VALUES ('appearance',?,?)")
-    ->execute([json_encode(['theme'=>'blue'],JSON_UNESCAPED_UNICODE),'9c18f221-0632-460e-ae2f-b1356f0dce61']);
+   $pdo->prepare("INSERT IGNORE INTO app_settings (setting_key,setting_value,updated_by,updated_at) VALUES ('appearance',?,?,?)")
+    ->execute([json_encode(['theme'=>'blue'],JSON_UNESCAPED_UNICODE),'9c18f221-0632-460e-ae2f-b1356f0dce61','2026-11-07 17:34:52.657000']);
 
    $config = "<?php\nreturn " . var_export(['db_host'=>'localhost','db_name'=>$dbName,'db_user'=>$dbUser,'db_pass'=>$dbPass], true) . ";\n";
    if (file_put_contents($privateConfig, $config, LOCK_EX) === false) throw new RuntimeException('ذخیره تنظیمات اتصال دیتابیس انجام نشد.');
