@@ -139,25 +139,9 @@ function showLoginGreeting() {
 }
 
 async function protectPage() {
-  const {data:{session},error:sessionError}=await supabase.auth.getSession();
-  if(sessionError || !session){location.replace("login.html");return false;}
-  let profile;
-  try {
-    profile=await profileFor(session.user);
-  } catch(e) {
-    console.error("Access validation failed:",e);
-    await supabase.auth.signOut();
-    location.replace("login.html?reason=access");
-    return false;
-  }
-  showLoginGreeting();
   try {
     await loadGlobalTheme();
-    addUserBar(profile);
-    if(path==="panel.html" && profile.is_admin){
-      setupUserManagement();
-      setupThemeSettings();
-    }
+    addUserBar({full_name:"بازدیدکننده",is_admin:false,job_title:""});
   } catch(e) {
     console.error("Page interface initialization failed:",e);
     const notice=document.createElement("div");
@@ -259,7 +243,7 @@ function addUserBar(profile) {
     if(btn.dataset.sideAction==="users")section.style.display=section.style.display==="none"?"block":"none";
     section.scrollIntoView({behavior:"smooth",block:"start"});
   }));
-  side.querySelector(".sidebar-logout").addEventListener("click",async()=>{await supabase.auth.signOut();location.replace("login.html");});
+  side.querySelector(".sidebar-logout")?.remove();
 }
 function addSubmenuLinks(module){
  document.querySelectorAll(".card").forEach(card=>{const h=card.querySelector("h2");if(!h||card.querySelector(".submenu-link"))return;const link=document.createElement("a");link.className="submenu-link";link.href="submodule.html?module="+encodeURIComponent(module)+"&title="+encodeURIComponent(h.textContent.trim());link.textContent="ورود به زیرمجموعه ←";link.style.cssText="display:inline-block;margin-top:12px;color:#5eead4;text-decoration:none;font-size:12px";card.append(link);});
@@ -390,7 +374,7 @@ function setupThemeSettings(){
   status.textContent="در حال ذخیره و تعمیم به همه کاربران...";
   try{
    const {data:{user}}=await supabase.auth.getUser();
-   const {error}=await supabase.from("app_settings").upsert({setting_key:"appearance",setting_value:{theme},updated_by:user.id,updated_at:new Date().toISOString()},{onConflict:"setting_key"});
+   const {error}=await supabase.from("app_settings").upsert({setting_key:"appearance",setting_value:{theme},updated_by:user?.id||null,updated_at:new Date().toISOString()},{onConflict:"setting_key"});
    if(error)throw error;
    applyTheme(theme);status.textContent=theme==="green"?"تم سبز برای همه کاربران فعال شد.":"تم آبی برای همه کاربران فعال شد.";
   }catch(e){status.textContent="ذخیره انجام نشد: "+(e.message||"خطای نامشخص");}
@@ -586,7 +570,7 @@ function setupDataForm(module) {
   load();
 }
 (async()=>{
-  if(path==="login.html"){await loginPage();return;} 
+  if(path==="login.html"){location.replace("panel.html");return;} 
   if(path==="recovery.html"){await recoveryPage();return;} 
   if(path==="reset-password.html"){await resetPasswordPage();return;}
   // تمام صفحات داخلی فقط پس از ورود معتبر در دسترس هستند.
