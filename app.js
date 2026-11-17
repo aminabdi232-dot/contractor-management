@@ -148,6 +148,10 @@ async function protectPage() {
     const profile=await profileFor(session.user);
     await loadGlobalTheme();
     addUserBar(profile);
+    if(path==="panel.html" && profile.is_admin){
+      setupUserManagement();
+      setupThemeSettings();
+    }
     if(path==="panel.html") showLoginGreeting();
     return true;
   } catch(e) {
