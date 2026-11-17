@@ -252,7 +252,19 @@ function addUserBar(profile) {
     if(btn.dataset.sideAction==="users")section.style.display=section.style.display==="none"?"block":"none";
     section.scrollIntoView({behavior:"smooth",block:"start"});
   }));
-  side.querySelector(".sidebar-logout")?.remove();
+  side.querySelector(".sidebar-logout")?.addEventListener("click",async event=>{
+    const button=event.currentTarget;
+    button.disabled=true;
+    button.querySelector("span").textContent="در حال خروج...";
+    const {error}=await supabase.auth.signOut();
+    if(error){
+      button.disabled=false;
+      button.querySelector("span").textContent="خروج از سامانه";
+      alert("خروج انجام نشد: "+error.message);
+      return;
+    }
+    location.replace("login.html");
+  });
 }
 function addSubmenuLinks(module){
  document.querySelectorAll(".card").forEach(card=>{const h=card.querySelector("h2");if(!h||card.querySelector(".submenu-link"))return;const link=document.createElement("a");link.className="submenu-link";link.href="submodule.html?module="+encodeURIComponent(module)+"&title="+encodeURIComponent(h.textContent.trim());link.textContent="ورود به زیرمجموعه ←";link.style.cssText="display:inline-block;margin-top:12px;color:#5eead4;text-decoration:none;font-size:12px";card.append(link);});
