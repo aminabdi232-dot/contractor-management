@@ -107,7 +107,7 @@ async function loginPage() {
       }
       await profileFor(data.user);
       try { sessionStorage.setItem("show-login-greeting", "1"); } catch {}
-      location.replace("index.html");
+      location.replace("panel.html");
     } catch(err) {
       await supabase.auth.signOut();
       message(status,err.message || "ورود انجام نشد.",true);
@@ -139,18 +139,23 @@ function showLoginGreeting() {
 }
 
 async function protectPage() {
-  try {
-    await loadGlobalTheme();
-    addUserBar({full_name:"بازدیدکننده",is_admin:false,job_title:""});
-  } catch(e) {
-    console.error("Page interface initialization failed:",e);
-    const notice=document.createElement("div");
-    notice.setAttribute("role","alert");
-    notice.textContent="بخشی از رابط سامانه بارگذاری نشد. صفحه را تازه‌سازی کنید.";
-    notice.style.cssText="margin:12px;padding:12px;border:1px solid #b45309;border-radius:10px;background:#451a03;color:#ffedd5;font:13px/2 Tahoma,sans-serif";
-    document.body.prepend(notice);
+  const {data:{session},error:sessionError}=await supabase.auth.getSession();
+  if(sessionError || !session?.user) {
+    location.replace("login.html");
+    return false;
   }
-  return true;
+  try {
+    const profile=await profileFor(session.user);
+    await loadGlobalTheme();
+    addUserBar(profile);
+    if(path==="panel.html") showLoginGreeting();
+    return true;
+  } catch(e) {
+    console.error("Authentication/profile check failed:",e);
+    await supabase.auth.signOut();
+    location.replace("login.html");
+    return false;
+  }
 }
 function setupUserManagement(){
   const main=$("main"); if(!main || $("#user-management")) return;
@@ -570,7 +575,7 @@ function setupDataForm(module) {
   load();
 }
 (async()=>{
-  if(path==="login.html"){location.replace("panel.html");return;} 
+  if(path==="login.html"){await loginPage();return;} 
   if(path==="recovery.html"){await recoveryPage();return;} 
   if(path==="reset-password.html"){await resetPasswordPage();return;}
   // تمام صفحات داخلی فقط پس از ورود معتبر در دسترس هستند.
