@@ -396,7 +396,7 @@ async function setupSubmodule(){
  if(!moduleMap[module+".html"] && !["transactions","projects","finance","payroll","documents","technical","services"].includes(module)){message($("#record-message"),"نشانی زیرمجموعه معتبر نیست.",true);return;}
  const moduleName=module==="transactions"?"transactions":module;
  const projectName=query.get("project")||"", scope=query.get("scope")||"";
- $("#sub-title").textContent=title;document.title=title+" | سامانه امین عبدی";$("#sub-desc").textContent="ثبت و پیگیری "+title+" برای "+projectName+(scope?" · "+scope:"");
+ $("#sub-title").textContent=title;document.title=title+" | پنل مدیریت امین عبدی";$("#sub-desc").textContent="ثبت و پیگیری "+title+" برای "+projectName+(scope?" · "+scope:"");
  if(projectName) $("#record-project").value=projectName;
  const status=$("#record-message"), list=$("#record-list");
  async function load(){list.replaceChildren();const {data,error}=await supabase.from("module_records").select("*").eq("module",moduleName).order("created_at",{ascending:false}).limit(100);if(error){message(status,error.message,true);return;}data.filter(x=>x.details?.submodule===title&&(!projectName||(x.project_name||"")===projectName)&&(!scope||(x.details?.scope||"")===scope)).forEach(x=>{const a=document.createElement("article");a.textContent=[x.title,x.project_name,x.details?.scope,x.reference_no,x.status,x.responsible,JSON.stringify(x.details)].filter(Boolean).join(" | ");list.append(a);});if(!list.children.length)list.textContent="هنوز سابقه‌ای برای این بخش از پروژه ثبت نشده است.";}
