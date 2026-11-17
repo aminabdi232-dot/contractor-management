@@ -3,48 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#071b17">
 <title>خیلی دیر کردی امین طاهونه‌چی!</title>
 <style>
-:root{color-scheme:dark}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;overflow:hidden;display:grid;place-items:center;padding:24px;background:#061713;color:#f5fbf7;font-family:Tahoma,Arial,sans-serif;position:relative}
-body:before{content:"";position:absolute;inset:-40%;background:radial-gradient(ellipse at 20% 25%,#1c7553 0,transparent 34%),radial-gradient(ellipse at 80% 75%,#254d69 0,transparent 32%),radial-gradient(ellipse at 55% 45%,#173d31 0,transparent 45%);animation:ambient 14s ease-in-out infinite alternate}
-.grid{position:absolute;inset:0;opacity:.14;background-image:linear-gradient(#8dc8a522 1px,transparent 1px),linear-gradient(90deg,#8dc8a522 1px,transparent 1px);background-size:52px 52px;mask-image:linear-gradient(transparent,#000 25%,#000 75%,transparent)}
-.glow{position:absolute;width:360px;height:360px;border:1px solid #a4dfbd30;border-radius:50%;box-shadow:0 0 90px #45b77a18,inset 0 0 80px #45b77a12;animation:float 9s ease-in-out infinite}
-.glow:before,.glow:after{content:"";position:absolute;border:1px solid #a4dfbd24;border-radius:50%;inset:28px}
-.glow:after{inset:62px}
-.orb{position:absolute;width:9px;height:9px;border-radius:50%;background:#b8e9c9;box-shadow:0 0 20px 5px #6dd69b88;top:18%;left:23%;animation:twinkle 3s infinite}
-.orb.two{top:75%;left:78%;width:6px;height:6px;animation-delay:1s}
-.card{position:relative;width:min(680px,100%);padding:clamp(34px,7vw,68px) 28px;text-align:center;border:1px solid #a8ddbd45;border-radius:30px;background:linear-gradient(145deg,#102b22eF,#0b201deF 65%,#10212beF);box-shadow:0 30px 100px #0009,0 0 65px #4cb77a18;backdrop-filter:blur(18px);animation:appear 1s cubic-bezier(.2,.8,.2,1) both}
-.mark{width:66px;height:66px;margin:0 auto 25px;border:1px solid #a9dfbd66;border-radius:21px;display:grid;place-items:center;background:linear-gradient(145deg,#bce8ca22,#6dc99410);box-shadow:inset 0 0 24px #8de0ad16,0 10px 35px #0003}
-.mark svg{width:34px;height:34px;stroke:#c0ebce;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.tag{display:inline-flex;align-items:center;gap:9px;margin-bottom:18px;padding:9px 16px;border:1px solid #83cba14a;border-radius:40px;background:#9bd9b012;color:#c1ebd0;font-size:12px;letter-spacing:.2px}
-.dot{width:7px;height:7px;background:#8de2aa;border-radius:50%;box-shadow:0 0 12px #8de2aa;animation:twinkle 1.8s infinite}
-h1{font-size:clamp(27px,5.2vw,45px);line-height:1.9;margin:0 0 12px;font-weight:800;letter-spacing:-1px;text-shadow:0 5px 30px #a0e3bd22}
-.sub{margin:0 auto 32px;color:#b5cfc0;font-size:14px;line-height:2;max-width:420px}
-a{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:14px;min-width:170px;padding:15px 29px;border-radius:14px;text-decoration:none;color:#10251b;font-weight:bold;font-size:15px;background:linear-gradient(110deg,#d2f0dc,#91d5ad);box-shadow:0 9px 28px #6cc78b35;transition:transform .25s,box-shadow .25s,filter .25s;overflow:hidden}
-a:after{content:"";position:absolute;inset:0;transform:translateX(-120%);background:linear-gradient(100deg,transparent,#fff9,transparent);transition:transform .65s}
-a:hover{transform:translateY(-4px);box-shadow:0 15px 38px #6cc78b55;filter:saturate(1.12)}
-a:hover:after{transform:translateX(120%)}
-.arrow{font-size:20px;line-height:1;transition:transform .25s}a:hover .arrow{transform:translateX(-5px)}
-.footer{margin-top:30px;color:#6f9681;font-size:11px;letter-spacing:1px}
-@keyframes ambient{to{transform:translate(3%, -2%) scale(1.08);filter:hue-rotate(16deg)}}
-@keyframes float{0%,100%{transform:translateY(-12px) scale(.98)}50%{transform:translateY(12px) scale(1.03)}}
-@keyframes appear{from{opacity:0;transform:translateY(28px) scale(.97);filter:blur(8px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
-@keyframes twinkle{0%,100%{opacity:.45;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 0,#245b49 0,transparent 42%),linear-gradient(145deg,#071b17,#102c25 60%,#101827);font-family:Tahoma,Arial,sans-serif;color:#f4f8f5}
+.card{width:min(650px,100%);padding:clamp(32px,7vw,64px);border:1px solid #477b65;border-radius:28px;background:#0c211dcc;box-shadow:0 25px 80px #0008;text-align:center}
+.tag{display:inline-block;margin-bottom:24px;padding:8px 15px;border:1px solid #477b65;border-radius:30px;color:#b8e6ce;font-size:13px}
+h1{font-size:clamp(27px,5vw,42px);line-height:1.9;margin:0 0 28px}
+a{display:inline-block;text-decoration:none;background:#b8d9c8;color:#10271e;padding:14px 34px;border-radius:12px;font-weight:bold;transition:.2s}a:hover{transform:translateY(-2px);background:#d1eddf}
 </style>
 </head>
 <body>
-<div class="grid" aria-hidden="true"></div><div class="glow" aria-hidden="true"></div><span class="orb" aria-hidden="true"></span><span class="orb two" aria-hidden="true"></span>
 <main class="card">
-<div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V9l8-5 8 5v10"/><path d="M8 19v-6h8v6M2 19h20M12 4v4"/></svg></div>
-<div class="tag"><span class="dot"></span> یک پیام اختصاصی برای شما</div>
+<div class="tag">پیام خوش‌آمدگویی</div>
 <h1>خیلی دیر کردی امین طاهونه‌چی!</h1>
-<p class="sub">بالاخره رسیدی! یه چیز کوچیک آماده کردم، بیا ببینیم چی از آب دراومده.</p>
-<a href="intro.html"><span>بعدی</span><span class="arrow">←</span></a>
-<div class="footer">WELCOME · AMIN ABDI</div>
+<a href="intro.html">بعدی</a>
 </main>
 </body>
 </html>
