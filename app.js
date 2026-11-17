@@ -106,8 +106,7 @@ async function loginPage() {
         throw error;
       }
       await profileFor(data.user);
-      try { sessionStorage.setItem("show-login-greeting", "1"); } catch {}
-      location.replace("panel.html");
+      location.replace("after-login.html");
     } catch(err) {
       await supabase.auth.signOut();
       message(status,err.message || "ورود انجام نشد.",true);
@@ -152,7 +151,6 @@ async function protectPage() {
       setupUserManagement();
       setupThemeSettings();
     }
-    if(path==="panel.html") showLoginGreeting();
     return true;
   } catch(e) {
     console.error("Authentication/profile check failed:",e);
